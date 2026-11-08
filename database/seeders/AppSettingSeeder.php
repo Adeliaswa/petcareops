@@ -14,10 +14,14 @@ class AppSettingSeeder extends Seeder
             ['key' => 'batas_minimum_pesan', 'value' => '60'],
             ['key' => 'horizon_hari', 'value' => '14'],
 
-            // Asumsi minimum skill berdasarkan ukuran hewan
             ['key' => 'skill_minimum_kecil', 'value' => 'dasar'],
             ['key' => 'skill_minimum_sedang', 'value' => 'menengah'],
             ['key' => 'skill_minimum_besar', 'value' => 'menengah'],
+
+            // Pengaturan informasi landing page M4
+            ['key' => 'jam_buka', 'value' => '08:00-17:00'],
+            ['key' => 'kontak_wa', 'value' => ''],
+            ['key' => 'alamat', 'value' => ''],
         ];
 
         foreach ($settings as $setting) {

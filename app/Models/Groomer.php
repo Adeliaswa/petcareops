@@ -37,4 +37,9 @@ class Groomer extends Model
     {
         return $this->hasMany(GroomerTimeOff::class);
     }
+
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
 }

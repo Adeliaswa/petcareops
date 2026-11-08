@@ -3,15 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\Groomer;
-use App\Models\GroomerShift;
 use App\Models\Service;
 use App\Models\User;
 use Carbon\Carbon;
 use Database\Seeders\AppSettingSeeder;
 use Database\Seeders\DurationFactorSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -20,9 +17,7 @@ class BookingSlotTest extends TestCase
     use RefreshDatabase;
 
     protected User $groomerUser;
-
     protected Groomer $groomer;
-
     protected Service $service;
 
     protected function setUp(): void
@@ -37,18 +32,6 @@ class BookingSlotTest extends TestCase
             DurationFactorSeeder::class,
             AppSettingSeeder::class,
         ]);
-
-        // Tabel sementara untuk kebutuhan pengujian M3.
-        // Migration appointments tetap menjadi bagian M4.
-        Schema::create('appointments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('groomer_id');
-            $table->dateTime('mulai');
-            $table->dateTime('selesai');
-            $table->string('status');
-            $table->unsignedInteger('durasi_estimasi');
-            $table->timestamps();
-        });
 
         $this->groomerUser = User::factory()->create([
             'name' => 'Groomer Test',
@@ -149,5 +132,39 @@ class BookingSlotTest extends TestCase
             );
 
         $this->assertNotEmpty($response->json('slots'));
+    }
+
+    public function test_public_slot_tidak_menawarkan_jadwal_kurang_dari_60_menit(): void
+    {
+        Carbon::setTestNow(
+            Carbon::parse('2026-11-09 08:00:00', 'Asia/Jakarta')
+        );
+
+        $this->groomer->shifts()->first()->update([
+            'jam_mulai' => '08:30',
+        ]);
+
+        $response = $this->postJson(
+            '/booking/slot',
+            $this->payload()
+        );
+
+        $response->assertOk();
+
+        $slots = $response->json('slots');
+
+        $this->assertNotEmpty($slots);
+
+        foreach ($slots as $slot) {
+            $mulai = Carbon::parse($slot['mulai'], 'Asia/Jakarta');
+
+            $this->assertGreaterThanOrEqual(
+                Carbon::parse(
+                    '2026-11-09 09:00:00',
+                    'Asia/Jakarta'
+                )->timestamp,
+                $mulai->timestamp
+            );
+        }
     }
 }

@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             DurationFactorSeeder::class,
             GroomerSeeder::class,
+            AppSettingSeeder::class,
         ]);
     }
 }

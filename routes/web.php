@@ -1,25 +1,33 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\PetController;
-use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\DurationFactorController;
 use App\Http\Controllers\Admin\GroomerController;
 use App\Http\Controllers\Admin\GroomerShiftController;
 use App\Http\Controllers\Admin\GroomerTimeOffController;
+use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\StaffAccountController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingEstimationController;
+use App\Http\Controllers\BookingStatusController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\PetController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Estimasi dan pencarian slot untuk pelanggan publik
+// Booking publik
 Route::prefix('booking')
     ->name('booking.')
     ->middleware('throttle:30,1')
     ->group(function () {
+        Route::post('/identifikasi', [
+            BookingController::class,
+            'identifikasi',
+        ])->name('identifikasi');
+
         Route::post('/estimasi', [
             BookingEstimationController::class,
             'estimasiPublik',
@@ -29,7 +37,20 @@ Route::prefix('booking')
             BookingEstimationController::class,
             'slotPublik',
         ])->name('slot');
+
+        Route::post('/konfirmasi', [
+            BookingController::class,
+            'konfirmasi',
+        ])->name('konfirmasi');
     });
+
+// Status booking publik
+Route::get('/status/{token}', [
+    BookingStatusController::class,
+    'show',
+])
+    ->middleware('throttle:30,1')
+    ->name('booking.status');
 
 Route::middleware(['auth', 'active'])->group(function () {
 
@@ -50,32 +71,32 @@ Route::middleware(['auth', 'active'])->group(function () {
             })->name('dashboard');
 
             Route::get('/staff', [
-                \App\Http\Controllers\Admin\StaffAccountController::class,
+                StaffAccountController::class,
                 'index',
             ])->name('staff.index');
 
             Route::get('/staff/create', [
-                \App\Http\Controllers\Admin\StaffAccountController::class,
+                StaffAccountController::class,
                 'create',
             ])->name('staff.create');
 
             Route::post('/staff', [
-                \App\Http\Controllers\Admin\StaffAccountController::class,
+                StaffAccountController::class,
                 'store',
             ])->name('staff.store');
 
             Route::patch('/staff/{user}/deactivate', [
-                \App\Http\Controllers\Admin\StaffAccountController::class,
+                StaffAccountController::class,
                 'destroy',
             ])->name('staff.deactivate');
 
             Route::patch('/staff/{user}/activate', [
-                \App\Http\Controllers\Admin\StaffAccountController::class,
+                StaffAccountController::class,
                 'activate',
             ])->name('staff.activate');
 
             Route::put('/staff/{user}/reset-password', [
-                \App\Http\Controllers\Admin\StaffAccountController::class,
+                StaffAccountController::class,
                 'resetPassword',
             ])->name('staff.reset-password');
 
@@ -144,7 +165,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                 ->name('libur.index');
         });
 
-    // Estimasi dan pencarian slot untuk admin dan resepsionis
+    // Booking staf: admin dan resepsionis
     Route::prefix('staf/booking')
         ->name('staf.booking.')
         ->middleware('role:admin,resepsionis')
@@ -158,6 +179,16 @@ Route::middleware(['auth', 'active'])->group(function () {
                 BookingEstimationController::class,
                 'slotStaf',
             ])->name('slot');
+
+            Route::post('/konfirmasi', [
+                BookingController::class,
+                'konfirmasiWalkIn',
+            ])->name('konfirmasi');
+
+            Route::get('/pelanggan', [
+                BookingController::class,
+                'cariPelanggan',
+            ])->name('pelanggan');
         });
 
     // Halaman staf: admin dan resepsionis

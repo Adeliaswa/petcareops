@@ -12,10 +12,9 @@ use App\Models\Service;
 use App\Models\User;
 use App\Services\SlotFinderService;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class SlotFinderServiceTest extends TestCase
@@ -23,7 +22,9 @@ class SlotFinderServiceTest extends TestCase
     use RefreshDatabase;
 
     private SlotFinderService $service;
+
     private Pet $pet;
+
     private Service $layanan;
 
     protected function setUp(): void
@@ -34,18 +35,7 @@ class SlotFinderServiceTest extends TestCase
             CarbonImmutable::parse('2026-11-08 08:00:00', 'Asia/Jakarta')
         );
 
-        Schema::create('appointments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('groomer_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('pet_id')->constrained()->cascadeOnDelete();
-            $table->dateTime('mulai');
-            $table->dateTime('selesai_estimasi');
-            $table->unsignedInteger('durasi_estimasi');
-            $table->string('status');
-            $table->timestamps();
-        });
-
-        $this->service = new SlotFinderService();
+        $this->service = new SlotFinderService;
 
         $settings = [
             'slot_interval' => '30',
@@ -100,7 +90,7 @@ class SlotFinderServiceTest extends TestCase
     ): Groomer {
         $user = User::create([
             'name' => $nama,
-            'email' => strtolower(str_replace(' ', '', $nama)) . '@test.com',
+            'email' => strtolower(str_replace(' ', '', $nama)).'@test.com',
             'password' => 'password',
             'is_active' => true,
         ]);
@@ -140,6 +130,9 @@ class SlotFinderServiceTest extends TestCase
             'selesai_estimasi' => $selesai,
             'durasi_estimasi' => $durasi,
             'status' => $status,
+            'token' => Str::random(64),
+            'rincian_estimasi' => json_encode([]),
+            'sumber' => 'publik',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

@@ -56,6 +56,7 @@ class AccountService
                 $activeAdmins = User::role('admin')
                     ->where('is_active', true)
                     ->lockForUpdate()
+                    ->get(['users.id'])
                     ->count();
 
                 if ($activeAdmins <= 1) {
