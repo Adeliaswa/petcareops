@@ -11,6 +11,10 @@ use Illuminate\Http\JsonResponse;
 
 class DurationFactorController extends Controller
 {
+    /**
+     * Mengambil daftar faktor durasi untuk halaman admin.
+     * Khusus admin.
+     */
     public function index(): JsonResponse
     {
         $factors = DurationFactor::query()
@@ -19,6 +23,31 @@ class DurationFactorController extends Controller
             ->paginate(15);
 
         return response()->json($factors);
+    }
+
+    /**
+     * Mengambil pilihan faktor durasi untuk form hewan.
+     * Dapat diakses admin dan resepsionis.
+     */
+    public function options(): JsonResponse
+    {
+        $factors = DurationFactor::query()
+            ->whereIn('kategori', [
+                'ukuran',
+                'jenis_bulu',
+                'perilaku',
+            ])
+            ->orderBy('kategori')
+            ->orderBy('key')
+            ->get([
+                'kategori',
+                'key',
+                'label',
+            ]);
+
+        return response()->json([
+            'data' => $factors,
+        ]);
     }
 
     public function store(StoreDurationFactorRequest $request): JsonResponse

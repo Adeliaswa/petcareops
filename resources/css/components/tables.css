@@ -1,0 +1,38 @@
+.table-host { container-type: inline-size; }
+.table-wrap { background: #fff; border: 1px solid var(--line); border-radius: 1.25rem; overflow: hidden; }
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.table { width: 100%; min-width: 42rem; border-collapse: collapse; font: 400 .9375rem/1.5 var(--font-body); color: var(--ink); }
+.table caption { text-align: left; padding: .875rem 1rem; font: 600 1rem/1.4 var(--font-display); border-bottom: 1px solid var(--line); }
+.table thead th { background: var(--brown); color: var(--pink); text-align: left; font-weight: 600; font-size: .8125rem; line-height: 1.4; padding: .75rem 1rem; white-space: nowrap; }
+.table td, .table tbody th { padding: .875rem 1rem; border-bottom: 1px solid var(--line); vertical-align: middle; text-align: left; font-weight: 400; }
+.table tbody tr:last-child > * { border-bottom: 0; }
+.table tbody tr:hover > *, .table tbody tr:focus-within > * { background: var(--row-hover); }
+.table tbody td, .table tbody th { background: #fff; transition: background .12s; }
+.table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.table td.strong, .table tbody th { font-weight: 600; }
+.table .muted { color: var(--muted); font-size: .875rem; }
+
+.table--sticky thead th:first-child, .table--sticky tbody th:first-child, .table--sticky td:first-child { position: sticky; left: 0; z-index: 1; }
+.table--sticky tbody th:first-child { box-shadow: 1px 0 0 var(--line); }
+
+.table__actions { display: flex; gap: .5rem; justify-content: flex-end; flex-wrap: wrap; }
+.table__actions form { margin: 0; }
+
+@container (max-width: 40rem) {
+    .table-wrap:has(.table--stack) { background: transparent; border: 0; border-radius: 0; overflow: visible; }
+    .table--stack { min-width: 0; display: block; }
+    .table--stack caption { display: block; padding: 0 0 .75rem; border: 0; }
+    .table--stack thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .table--stack tbody { display: grid; gap: .75rem; }
+    .table--stack tr { display: block; background: #fff; border: 1px solid var(--line); border-radius: 1.25rem; padding: .25rem 1rem .5rem; }
+    .table--stack tbody tr:hover > *, .table--stack tbody tr:focus-within > * { background: transparent; }
+    .table--stack tbody tr:hover { background: var(--row-hover); }
+    .table--stack td, .table--stack tbody th { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .5rem 0; border: 0; background: transparent; text-align: right; }
+    .table--stack td::before { content: attr(data-label); flex: none; font-size: .8125rem; font-weight: 600; color: var(--muted); text-align: left; }
+    .table--stack tbody th { font: 600 1.125rem/1.3 var(--font-display); justify-content: flex-start; text-align: left; padding: .75rem 0 .625rem; border-bottom: 1px solid var(--line); margin-bottom: .25rem; }
+    .table--stack .table__actions { padding-top: .375rem; justify-content: flex-start; }
+    .table--stack td.actions { justify-content: flex-start; }
+    .table--stack td.actions::before { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .table tbody td, .table tbody th { transition: none; } }

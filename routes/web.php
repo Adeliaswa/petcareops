@@ -16,8 +16,30 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+
+    // Jika belum login, arahkan ke halaman login
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    // Jika sudah login, arahkan sesuai role
+    $user = auth()->user();
+
+    if ($user->hasRole('admin')) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    if ($user->hasRole('resepsionis')) {
+        return redirect()->route('staf.appointments.index');
+    }
+
+    if ($user->hasRole('groomer')) {
+        return redirect()->route('groomer.tasks.index');
+    }
+
+    abort(403, 'Akun tidak memiliki role yang sesuai.');
+
+})->name('home');
 
 // Halaman booking publik
 Route::get('/booking', [PageController::class, 'publicBooking'])
@@ -268,6 +290,20 @@ Route::middleware(['auth', 'active'])->group(function () {
                 ])->name('pets');
             });
 
+            
+            // Pilihan faktor durasi untuk form hewan.
+            // Admin dan resepsionis hanya mendapatkan akses membaca.
+            Route::get('/faktor-durasi/options', [
+                DurationFactorController::class,
+                'options',
+            ])->name('faktor-durasi.options');
+
+            // CRUD pemilik (JSON)
+            Route::resource('pemilik', CustomerController::class)
+                ->parameters(['pemilik' => 'customer'])
+                ->except(['create', 'edit']);
+
+
             // CRUD pemilik (JSON)
             Route::resource('pemilik', CustomerController::class)
                 ->parameters(['pemilik' => 'customer'])
@@ -278,6 +314,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                 ->parameters(['hewan' => 'pet'])
                 ->except(['create', 'edit']);
         });
+        
 
     // Halaman khusus groomer
     Route::prefix('groomer')

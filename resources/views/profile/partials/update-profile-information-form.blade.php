@@ -1,59 +1,26 @@
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Profile Information') }}
-        </h2>
+<form method="post" action="{{ route('profile.update') }}" class="profile-form">
+    @csrf
+    @method('patch')
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
-    </header>
+    <div class="field {{ $errors->has('name') ? 'has-error' : '' }}">
+        <label class="field-label" for="name">Nama lengkap</label>
+        <input class="form-input" id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name" aria-invalid="{{ $errors->has('name') ? 'true' : 'false' }}">
+        @error('name')<p class="field-error">{{ $message }}</p>@enderror
+    </div>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
-        @csrf
-        @method('patch')
+    <div class="field {{ $errors->has('email') ? 'has-error' : '' }}">
+        <label class="field-label" for="email">Alamat email</label>
+        <input class="form-input" id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required autocomplete="username" aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}">
+        @error('email')<p class="field-error">{{ $message }}</p>@enderror
+        @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+            <p class="field-hint">Alamat email belum diverifikasi.</p>
+        @endif
+    </div>
 
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input
-                id="name"
-                name="name"
-                type="text"
-                class="mt-1 block w-full"
-                :value="old('name', $user->name)"
-                required
-                autofocus
-                autocomplete="name"
-            />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
-        </div>
-
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input
-                id="email"
-                name="email"
-                type="email"
-                class="mt-1 block w-full"
-                :value="old('email', $user->email)"
-                required
-                autocomplete="username"
-            />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
-        </div>
-
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
-            @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
-            @endif
-        </div>
-    </form>
-</section>
+    <div class="form-actions">
+        <button type="submit" class="btn">Simpan perubahan</button>
+        @if (session('status') === 'profile-updated')
+            <span class="form-success"><x-icon name="check-circle" /> Tersimpan.</span>
+        @endif
+    </div>
+</form>

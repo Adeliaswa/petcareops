@@ -1,0 +1,63 @@
+
+/* Token Pet Care Ops. Nama variabel sama dengan panduan desain. */
+
+:root {
+    --brown: #533E36;
+    --pink: #FFC5BE;
+    --rose: #C5ADAB;
+    --sage: #CAC6AE;
+    --white: #FFFFFF;
+    --black: #121212;
+
+    --ink: var(--brown);
+    --muted: #7a655d;
+    --line: rgba(83, 62, 54, .12);
+    --field: rgba(202, 198, 174, .35);
+    --error: #B3261E;
+    --focus-ring: rgba(255, 197, 190, .75);
+    --accent: #c4766c;
+    --row-hover: #fff1ef;
+    --page-bg: #F6F5ED;
+
+    --font-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-display: "Fredoka", "Plus Jakarta Sans", system-ui, sans-serif;
+
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-semibold: 600;
+    --fw-bold: 700;
+
+    --fs-hero: clamp(2.5rem, 1.9rem + 3vw, 4rem);
+    --fs-h1: clamp(2rem, 1.6rem + 2vw, 3rem);
+    --fs-h2: clamp(1.625rem, 1.4rem + 1.1vw, 2.25rem);
+    --fs-h3: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+    --fs-h4: 1.125rem;
+    --fs-lead: clamp(1.125rem, 1.05rem + 0.4vw, 1.375rem);
+    --fs-body: 1rem;
+    --fs-small: 0.875rem;
+    --fs-tiny: 0.75rem;
+
+    --fs-admin-title: 1.5rem;
+    --fs-admin-section: 1.125rem;
+    --fs-admin-body: 0.9375rem;
+    --fs-admin-table: 0.875rem;
+    --fs-admin-label: 0.8125rem;
+    --fs-admin-meta: 0.75rem;
+    --fs-admin-stat: 2rem;
+
+    --lh-tight: 1.15;
+    --lh-snug: 1.3;
+    --lh-normal: 1.6;
+    --lh-ui: 1.4;
+    --ls-display: -0.01em;
+    --ls-wide: 0.02em;
+
+    --radius-card: 1.5rem;
+    --radius-hero: 2rem;
+    --radius-inner: .875rem;
+
+    --shadow-sm: 0 6px 16px rgba(83, 62, 54, .08);
+    --shadow-lg: 0 20px 50px rgba(83, 62, 54, .14);
+
+    --sidebar-w: 16rem;
+}

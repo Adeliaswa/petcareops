@@ -1,0 +1,43 @@
+.field { margin-bottom: 1.125rem; }
+.field-label { display: block; font-size: .875rem; font-weight: 600; line-height: 1.4; margin-bottom: .375rem; color: var(--ink); }
+.field-label .req { color: var(--error); margin-left: .125rem; }
+.control { position: relative; }
+
+.form-input, .form-select {
+    width: 100%; font: 400 1rem/1.4 var(--font-body); color: var(--ink);
+    background: var(--field); border: 1.5px solid transparent; border-radius: var(--radius-inner);
+    padding: .8125rem 1rem; outline: none; box-shadow: none;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.form-input::placeholder { color: var(--ink); opacity: .6; }
+.form-input:focus, .form-select:focus { border-color: var(--brown); background: transparent; box-shadow: 0 0 0 4px var(--focus-ring); }
+.form-input[readonly] { opacity: .75; cursor: not-allowed; }
+.form-input:disabled, .form-select:disabled { opacity: .6; cursor: not-allowed; }
+
+.has-error .form-input, .has-error .form-select, .form-input[aria-invalid="true"] { border-color: var(--error); }
+.has-error .form-input:focus, .has-error .form-select:focus { box-shadow: 0 0 0 4px rgba(179, 38, 30, .2); }
+
+.has-ic .form-input { padding-left: 2.75rem; }
+.ic { position: absolute; left: .95rem; top: 50%; transform: translateY(-50%); width: 1.125rem; height: 1.125rem; fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: .65; pointer-events: none; }
+
+.form-select { appearance: none; -webkit-appearance: none; background-image: none; padding-right: 2.75rem; cursor: pointer; }
+.chev { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); width: 1rem; height: 1rem; fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; opacity: .7; }
+
+.control--password .form-input { padding-right: 5rem; }
+.toggle { position: absolute; right: .5rem; top: 50%; transform: translateY(-50%); background: none; border: 0; cursor: pointer; color: var(--muted); font: 600 .8125rem/1.4 var(--font-body); padding: .375rem .5rem; border-radius: .5rem; }
+.toggle:hover { color: var(--ink); }
+
+.field-hint { font-size: .75rem; line-height: 1.4; color: var(--muted); margin: .375rem 0 0; }
+.has-error .field-hint { display: none; }
+.field-error { display: flex; align-items: flex-start; gap: .375rem; font-size: .875rem; font-weight: 500; line-height: 1.5; color: var(--error); margin: .375rem 0 0; }
+.field-error svg { flex: none; width: 1rem; height: 1.5rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+.check { position: relative; display: flex; align-items: flex-start; gap: .625rem; font-size: .875rem; font-weight: 500; line-height: 1.5; cursor: pointer; margin: 0; }
+.check input { position: absolute; opacity: 0; width: 1.25rem; height: 1.25rem; margin: 0; }
+.box { flex: none; width: 1.25rem; height: 1.25rem; margin-top: .125rem; border-radius: .375rem; background: var(--field); border: 1.5px solid var(--rose); display: grid; place-items: center; transition: background .15s, border-color .15s, box-shadow .15s; }
+.box svg { width: .75rem; height: .75rem; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.check input:checked + .box { background: var(--accent); border-color: var(--accent); }
+.check input:checked + .box svg { opacity: 1; }
+.check input:focus-visible + .box { border-color: var(--brown); box-shadow: 0 0 0 4px var(--focus-ring); }
+
+.form-actions { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1.5rem; }

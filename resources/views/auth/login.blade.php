@@ -1,47 +1,56 @@
 <x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <p class="auth-eyebrow">Selamat datang kembali</p>
+    <h1 class="auth-title" id="login-title"><span>Login</span></h1>
+    <p class="auth-lead">Masuk untuk mengelola reservasi dan jadwal grooming hari ini.</p>
 
-    <form method="POST" action="{{ route('login') }}">
+    @if (session('status'))
+        <p class="auth-status" role="status">{{ session('status') }}</p>
+    @endif
+
+    <form id="login-form" method="POST" action="{{ route('login') }}" novalidate>
         @csrf
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="auth-field @error('email') has-error @enderror">
+            <label class="auth-label" for="email">Email</label>
+            <div class="auth-control">
+                <svg class="auth-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>
+                </svg>
+                <input class="auth-input" id="email" name="email" type="email"
+                       value="{{ old('email') }}" autocomplete="username"
+                       placeholder="admin@petcare.id" required autofocus
+                       aria-describedby="email-error"
+                       @error('email') aria-invalid="true" @enderror>
+            </div>
+            <p class="auth-error" id="email-error" role="alert"
+               data-msg="Isi email Anda, misalnya admin@petcare.id.">{{ $errors->first('email') ?: 'Isi email Anda, misalnya admin@petcare.id.' }}</p>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="auth-field">
+            <label class="auth-label" for="password">Kata sandi</label>
+            <div class="auth-control auth-control--pw">
+                <svg class="auth-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>
+                </svg>
+                <input class="auth-input" id="password" name="password" type="password"
+                       autocomplete="current-password" placeholder="Masukkan kata sandi"
+                       required aria-describedby="password-error">
+                <button type="button" class="auth-toggle" id="password-toggle"
+                        aria-pressed="false" aria-controls="password">Lihat</button>
+            </div>
+            <p class="auth-error" id="password-error" role="alert"
+               data-msg="Isi kata sandi Anda.">Isi kata sandi Anda.</p>
         </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+        <div class="auth-row">
+            <label class="auth-check" for="remember">
+                <input id="remember" type="checkbox" name="remember" value="1"
+                       {{ old('remember') ? 'checked' : '' }}>
+                <span>Ingat saya</span>
             </label>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
+        <button class="btn btn--block" id="login-submit" type="submit">Masuk</button>
+        <p class="auth-help">Belum memiliki akun? Hubungi admin salon.</p>
     </form>
 </x-guest-layout>

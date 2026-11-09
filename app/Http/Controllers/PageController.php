@@ -15,7 +15,31 @@ class PageController extends Controller
 {
     public function dashboard()
     {
-        return view('dashboard');
+        // Ringkasan dashboard diambil langsung dari data aktual database.
+        $stats = [
+            'appointments_today' => Appointment::query()
+                ->whereDate('mulai', today())
+                ->where('status', '!=', 'dibatalkan')
+                ->count(),
+            'waiting_appointments' => Appointment::query()
+                ->where('status', 'menunggu')
+                ->count(),
+            'customers' => Customer::query()->count(),
+            'pets' => Pet::query()->count(),
+            'active_groomers' => Groomer::query()
+                ->whereHas('user', fn ($query) => $query->where('is_active', true))
+                ->count(),
+        ];
+
+        $todayAppointments = Appointment::query()
+            ->with(['pet.customer', 'groomer.user', 'services'])
+            ->whereDate('mulai', today())
+            ->where('status', '!=', 'dibatalkan')
+            ->orderBy('mulai')
+            ->limit(6)
+            ->get();
+
+        return view('dashboard', compact('stats', 'todayAppointments'));
     }
 
     public function adminServices()

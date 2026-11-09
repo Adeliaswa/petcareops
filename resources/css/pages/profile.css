@@ -1,0 +1,25 @@
+.profile-intro { display: flex; align-items: center; gap: 1rem; margin: .25rem 0 1.25rem; padding: 1.1rem 1.25rem; background: rgba(255,197,190,.28); border: 1px solid rgba(197,173,171,.45); border-radius: var(--radius-card); }
+.profile-avatar { display: grid; place-items: center; flex: none; width: 3.5rem; height: 3.5rem; color: var(--pink); background: var(--brown); border-radius: 1.2rem; font: 600 1.5rem/1 var(--font-display); }
+.profile-intro__text { flex: 1; min-width: 0; }
+.profile-intro__text h2 { margin: .1rem 0; color: var(--brown); font: 600 1.25rem/1.25 var(--font-display); overflow-wrap: anywhere; }
+.profile-intro__text p:last-child { margin: 0; color: var(--muted); font-size: .82rem; overflow-wrap: anywhere; }
+.profile-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: start; gap: 1.25rem; }
+.profile-card { min-width: 0; }
+.profile-card__heading { display: flex; align-items: center; gap: .8rem; margin-bottom: 1.4rem; }
+.profile-card__icon { display: grid; place-items: center; flex: none; width: 2.7rem; height: 2.7rem; color: var(--brown); background: rgba(202,198,174,.45); border-radius: .9rem; }
+.profile-card__icon--pink { background: rgba(255,197,190,.55); }
+.profile-card__heading h2 { margin: 0; color: var(--brown); font: 600 1.2rem/1.25 var(--font-display); }
+.profile-card__heading p { margin: .2rem 0 0; color: var(--muted); font-size: .8rem; line-height: 1.45; }
+.profile-form { display: grid; gap: .15rem; }
+.profile-form .field { margin-bottom: .85rem; }
+.profile-form .form-input { background: rgba(202,198,174,.24); border-color: rgba(197,173,171,.65); }
+.profile-form .form-input:focus { background: #fff; border-color: var(--brown); }
+.profile-form .form-actions { align-items: center; margin-top: .35rem; }
+.form-success { display: inline-flex; align-items: center; gap: .35rem; color: #4b6636; font-size: .8rem; font-weight: 600; }
+.form-success .icon { width: 1rem; height: 1rem; }
+.role-badge { display: inline-flex; align-items: center; justify-content: center; padding: .3rem .65rem; color: var(--brown); background: rgba(202,198,174,.42); border-radius: 999px; font-size: .72rem; font-weight: 700; white-space: nowrap; }
+.role-badge--admin { background: var(--brown); color: var(--pink); }
+.role-badge--resepsionis { background: rgba(255,197,190,.6); }
+.role-badge--groomer { background: rgba(202,198,174,.6); }
+@media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .profile-intro { align-items: flex-start; flex-wrap: wrap; } .profile-intro > .role-badge { margin-left: 4.5rem; } }
