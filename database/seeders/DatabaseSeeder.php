@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             DurationFactorSeeder::class,
             GroomerSeeder::class,
             AppSettingSeeder::class,
+            DemoSeeder::class,
         ]);
     }
 }
