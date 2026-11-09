@@ -15,6 +15,8 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReminderController;
+use App\Http\Controllers\InvoiceController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -261,10 +263,47 @@ Route::middleware(['auth', 'active'])->group(function () {
                 'staffAppointmentDetail',
             ])->name('appointments.show');
 
+            // Invoice dan pembayaran
+Route::post('/appointments/{appointment}/invoice', [
+    InvoiceController::class,
+    'store',
+])->name('appointments.invoice.store');
+
+Route::get('/invoices/{invoice}', [
+    InvoiceController::class,
+    'show',
+])->name('invoices.show');
+
+Route::get('/invoices/{invoice}/print', [
+    InvoiceController::class,
+    'print',
+])->name('invoices.print');
+
+Route::post('/invoices/{invoice}/payments', [
+    InvoiceController::class,
+    'storePayment',
+])->name('invoices.payments.store');
+
+// Penghapusan pembayaran hanya untuk admin
+Route::delete('/payments/{payment}', [
+    InvoiceController::class,
+    'destroyPayment',
+])->middleware('role:admin')->name('payments.destroy');
+
             Route::post('/appointments/{appointment}/batal', [
                 AppointmentStatusController::class,
                 'batalkan',
             ])->name('appointments.cancel');
+
+            Route::get('/pengingat', [
+    ReminderController::class,
+    'index',
+])->name('pengingat.index');
+
+Route::post('/pengingat/jalankan', [
+    ReminderController::class,
+    'jalankan',
+])->middleware('throttle:5,1')->name('pengingat.jalankan');
 
             Route::get('/kalender-groomer', [
                 PageController::class,
@@ -282,6 +321,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                     PageController::class,
                     'staffPets',
                 ])->name('pets');
+
             });
 
             // CRUD pemilik (JSON)

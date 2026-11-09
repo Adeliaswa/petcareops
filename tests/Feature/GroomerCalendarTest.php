@@ -52,40 +52,42 @@ class GroomerCalendarTest extends TestCase
         return [$user, $groomer];
     }
 
-    private function buatAppointment(
-        Groomer $groomer,
-        string $namaPet,
-        string $mulai
-    ): Appointment {
-        $customer = Customer::create([
-            'nama' => 'Pelanggan ' . $namaPet,
-            'no_wa' => '6281234567890' . random_int(1, 9),
-        ]);
 
-        $pet = Pet::create([
-            'customer_id' => $customer->id,
-            'nama' => $namaPet,
-            'spesies' => 'anjing',
-            'ras' => 'Poodle',
-            'ukuran' => 'kecil',
-            'jenis_bulu' => 'panjang',
-            'perilaku' => 'normal',
-        ]);
+private function buatAppointment(
+    Groomer $groomer,
+    string $namaPet,
+    string $mulai
+): Appointment {
+    $customer = Customer::create([
+        'nama' => 'Pelanggan ' . $namaPet,
+        'no_wa' => '628' . fake()->unique()->numerify('###########'),
+    ]);
 
-        $waktuMulai = Carbon::parse($mulai);
+    $pet = Pet::create([
+        'customer_id' => $customer->id,
+        'nama' => $namaPet,
+        'spesies' => 'anjing',
+        'ras' => 'Poodle',
+        'ukuran' => 'kecil',
+        'jenis_bulu' => 'panjang',
+        'perilaku' => 'normal',
+    ]);
 
-        return Appointment::create([
-            'pet_id' => $pet->id,
-            'groomer_id' => $groomer->id,
-            'mulai' => $waktuMulai,
-            'selesai_estimasi' => $waktuMulai->copy()->addMinutes(60),
-            'durasi_estimasi' => 60,
-            'status' => 'menunggu',
-            'token' => bin2hex(random_bytes(32)),
-            'rincian_estimasi' => [],
-            'sumber' => 'publik',
-        ]);
-    }
+    $waktuMulai = Carbon::parse($mulai);
+
+    return Appointment::create([
+        'pet_id' => $pet->id,
+        'groomer_id' => $groomer->id,
+        'mulai' => $waktuMulai,
+        'selesai_estimasi' => $waktuMulai->copy()->addMinutes(60),
+        'durasi_estimasi' => 60,
+        'status' => 'menunggu',
+        'token' => bin2hex(random_bytes(32)),
+        'rincian_estimasi' => [],
+        'sumber' => 'publik',
+    ]);
+}
+
 
     public function test_admin_can_view_groomer_calendar(): void
     {

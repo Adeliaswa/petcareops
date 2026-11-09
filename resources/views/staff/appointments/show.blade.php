@@ -105,6 +105,34 @@
         </form>
     @endif
 
+    @if (in_array($appointment->status, ['selesai', 'dijemput']))
+        <hr>
+
+        <h2>Invoice</h2>
+
+        @if ($appointment->invoice)
+            <p>Nomor invoice: {{ $appointment->invoice->nomor_invoice }}</p>
+            <p>
+                Total tagihan:
+                Rp{{ number_format($appointment->invoice->total, 0, ',', '.') }}
+            </p>
+
+            <a href="{{ route('staf.invoices.show', $appointment->invoice) }}">
+                Lihat Invoice
+            </a>
+        @else
+            <p>Invoice belum dibuat.</p>
+
+            <form
+                method="POST"
+                action="{{ route('staf.appointments.invoice.store', $appointment) }}"
+            >
+                @csrf
+                <button type="submit">Buat Invoice</button>
+            </form>
+        @endif
+    @endif
+
     <hr>
 
     <a href="{{ route('staf.appointments.index') }}">

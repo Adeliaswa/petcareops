@@ -113,7 +113,7 @@
             </ul>
 
             <p>Sumber booking: {{ $appointment->sumber }}</p>
-            <a href="{{ route('appointments.show', $appointment) }}">
+            <a href="{{ route('staf.appointments.show', $appointment) }}">
     Lihat Detail
 </a>
         </article>

@@ -32,4 +32,9 @@ class Pet extends Model
     {
         return $this->hasMany(Appointment::class);
     }
+
+    public function reminders(): HasMany
+{
+    return $this->hasMany(Reminder::class);
+}
 }

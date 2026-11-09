@@ -98,6 +98,7 @@ class PageController extends Controller
                 'pet.customer',
                 'groomer.user',
                 'services',
+                'invoice.payments',
             ])
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
@@ -141,6 +142,7 @@ class PageController extends Controller
             'pet.customer',
             'groomer.user',
             'services',
+            'invoice.payments',
         ]);
 
         return view('staff.appointments.show', compact('appointment'));
@@ -250,27 +252,27 @@ class PageController extends Controller
         return view('staff.pets.index', compact('pets'));
     }
 
+    public function staffPetGroomingHistory(Pet $pet)
+    {
+        $pet->load('customer');
 
-public function staffPetGroomingHistory(Pet $pet)
-{
-    $pet->load('customer');
+        $groomingRecords = $pet->appointments()
+            ->whereHas('groomingRecord')
+            ->with([
+                'groomer.user',
+                'services',
+                'groomingRecord',
+            ])
+            ->latest('mulai')
+            ->paginate(10)
+            ->withQueryString();
 
-    $groomingRecords = $pet->appointments()
-        ->whereHas('groomingRecord')
-        ->with([
-            'groomer.user',
-            'services',
-            'groomingRecord',
-        ])
-        ->latest('mulai')
-        ->paginate(10)
-        ->withQueryString();
+        return view('staff.pets.grooming-history', compact(
+            'pet',
+            'groomingRecords'
+        ));
+    }
 
-    return view('staff.pets.grooming-history', compact(
-        'pet',
-        'groomingRecords'
-    ));
-}
     public function publicBooking()
     {
         $services = Service::query()
