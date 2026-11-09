@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\GroomerShiftController;
 use App\Http\Controllers\Admin\GroomerTimeOffController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\StaffAccountController;
+use App\Http\Controllers\AppointmentStatusController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingEstimationController;
 use App\Http\Controllers\BookingStatusController;
@@ -255,6 +256,21 @@ Route::middleware(['auth', 'active'])->group(function () {
                 'staffAppointments',
             ])->name('appointments.index');
 
+            Route::get('/appointments/{appointment}', [
+                PageController::class,
+                'staffAppointmentDetail',
+            ])->name('appointments.show');
+
+            Route::post('/appointments/{appointment}/batal', [
+                AppointmentStatusController::class,
+                'batalkan',
+            ])->name('appointments.cancel');
+
+            Route::get('/kalender-groomer', [
+                PageController::class,
+                'groomerCalendar',
+            ])->name('groomers.calendar');
+
             // Halaman Blade pemilik dan hewan
             Route::prefix('halaman')->name('pages.')->group(function () {
                 Route::get('/pemilik', [
@@ -273,6 +289,11 @@ Route::middleware(['auth', 'active'])->group(function () {
                 ->parameters(['pemilik' => 'customer'])
                 ->except(['create', 'edit']);
 
+                Route::get('/hewan/{pet}/riwayat-grooming', [
+    PageController::class,
+    'staffPetGroomingHistory',
+])->name('pets.grooming-history');
+
             // CRUD hewan (JSON)
             Route::resource('hewan', PetController::class)
                 ->parameters(['hewan' => 'pet'])
@@ -288,7 +309,19 @@ Route::middleware(['auth', 'active'])->group(function () {
                 PageController::class,
                 'groomerTasks',
             ])->name('tasks.index');
+
+            Route::post('/tugas/{appointment}/mulai', [
+                AppointmentStatusController::class,
+                'mulai',
+            ])->name('tasks.start');
+
+            Route::post('/tugas/{appointment}/selesai', [
+    AppointmentStatusController::class,
+    'selesai',
+])->name('tasks.finish');
+
         });
+
 });
 
 require __DIR__.'/auth.php';
