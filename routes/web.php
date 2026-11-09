@@ -10,6 +10,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingEstimationController;
 use App\Http\Controllers\BookingStatusController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -18,7 +19,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Booking publik
+// Halaman booking publik
+Route::get('/booking', [PageController::class, 'publicBooking'])
+    ->name('booking.create');
+
+// Proses booking publik
 Route::prefix('booking')
     ->name('booking.')
     ->middleware('throttle:30,1')
@@ -44,7 +49,7 @@ Route::prefix('booking')
         ])->name('konfirmasi');
     });
 
-// Status booking publik
+// Status booking publik (JSON)
 Route::get('/status/{token}', [
     BookingStatusController::class,
     'show',
@@ -66,10 +71,14 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->name('admin.')
         ->middleware('role:admin')
         ->group(function () {
-            Route::get('/dashboard', function () {
-                return view('dashboard');
-            })->name('dashboard');
 
+            // Dashboard
+            Route::get('/dashboard', [
+                PageController::class,
+                'dashboard',
+            ])->name('dashboard');
+
+            // Pengelolaan akun staf
             Route::get('/staff', [
                 StaffAccountController::class,
                 'index',
@@ -100,16 +109,50 @@ Route::middleware(['auth', 'active'])->group(function () {
                 'resetPassword',
             ])->name('staff.reset-password');
 
-            // CRUD layanan grooming
+            // Halaman Blade admin
+            Route::prefix('halaman')->name('pages.')->group(function () {
+                Route::get('/layanan', [
+                    PageController::class,
+                    'adminServices',
+                ])->name('services');
+
+                Route::get('/faktor-durasi', [
+                    PageController::class,
+                    'adminDurationFactors',
+                ])->name('duration-factors');
+
+                Route::get('/groomer', [
+                    PageController::class,
+                    'adminGroomers',
+                ])->name('groomers');
+
+                Route::get('/groomer/{groomer}/shift', [
+                    PageController::class,
+                    'adminGroomerShifts',
+                ])->name('groomer-shifts');
+
+                Route::get('/groomer/{groomer}/libur', [
+                    PageController::class,
+                    'adminGroomerTimeOff',
+                ])->name('groomer-time-off');
+
+                Route::get('/libur', [
+                    PageController::class,
+                    'adminTimeOff',
+                ])->name('time-off');
+            });
+
+            // CRUD layanan grooming (JSON)
             Route::resource('layanan', ServiceController::class)
                 ->parameters(['layanan' => 'service'])
                 ->except(['create', 'edit']);
 
+            // CRUD faktor durasi (JSON)
             Route::resource('faktor-durasi', DurationFactorController::class)
                 ->parameters(['faktor-durasi' => 'factor'])
                 ->except(['create', 'edit']);
 
-            // Pengelolaan groomer
+            // Pengelolaan groomer (JSON)
             Route::get('groomer', [GroomerController::class, 'index'])
                 ->name('groomer.index');
 
@@ -119,7 +162,7 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::put('groomer/{groomer}', [GroomerController::class, 'update'])
                 ->name('groomer.update');
 
-            // Shift groomer
+            // Shift groomer (JSON)
             Route::get('groomer/{groomer}/shift', [
                 GroomerShiftController::class,
                 'index',
@@ -140,7 +183,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                 'destroy',
             ])->name('groomer.shift.destroy');
 
-            // Jadwal libur groomer
+            // Jadwal libur groomer (JSON)
             Route::get('groomer/{groomer}/libur', [
                 GroomerTimeOffController::class,
                 'index',
@@ -161,8 +204,10 @@ Route::middleware(['auth', 'active'])->group(function () {
                 'destroy',
             ])->name('groomer.time-off.destroy');
 
-            Route::get('libur', [GroomerTimeOffController::class, 'indexAll'])
-                ->name('libur.index');
+            Route::get('libur', [
+                GroomerTimeOffController::class,
+                'indexAll',
+            ])->name('libur.index');
         });
 
     // Booking staf: admin dan resepsionis
@@ -170,6 +215,14 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->name('staf.booking.')
         ->middleware('role:admin,resepsionis')
         ->group(function () {
+
+            // Halaman form booking staf
+            Route::get('/', [
+                PageController::class,
+                'staffBooking',
+            ])->name('create');
+
+            // Proses booking staf (JSON)
             Route::post('/estimasi', [
                 BookingEstimationController::class,
                 'estimasiStaf',
@@ -196,16 +249,31 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->name('staf.')
         ->middleware('role:admin,resepsionis')
         ->group(function () {
-            Route::get('/appointments', function () {
-                return view('staff.appointments.index');
-            })->name('appointments.index');
 
-            // CRUD pemilik
+            Route::get('/appointments', [
+                PageController::class,
+                'staffAppointments',
+            ])->name('appointments.index');
+
+            // Halaman Blade pemilik dan hewan
+            Route::prefix('halaman')->name('pages.')->group(function () {
+                Route::get('/pemilik', [
+                    PageController::class,
+                    'staffCustomers',
+                ])->name('customers');
+
+                Route::get('/hewan', [
+                    PageController::class,
+                    'staffPets',
+                ])->name('pets');
+            });
+
+            // CRUD pemilik (JSON)
             Route::resource('pemilik', CustomerController::class)
                 ->parameters(['pemilik' => 'customer'])
                 ->except(['create', 'edit']);
 
-            // CRUD hewan
+            // CRUD hewan (JSON)
             Route::resource('hewan', PetController::class)
                 ->parameters(['hewan' => 'pet'])
                 ->except(['create', 'edit']);
@@ -216,9 +284,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->name('groomer.')
         ->middleware('role:groomer')
         ->group(function () {
-            Route::get('/tugas', function () {
-                return view('groomer.tasks.index');
-            })->name('tasks.index');
+            Route::get('/tugas', [
+                PageController::class,
+                'groomerTasks',
+            ])->name('tasks.index');
         });
 });
 
