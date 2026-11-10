@@ -2,43 +2,54 @@
    HALAMAN KELOLA AKUN STAF
 ======================================== */
 
+
 .account-form {
     max-width: 36rem;
 }
 
+
 .account-name {
     font-weight: 600;
 }
+
 
 .account-self {
     color: var(--muted);
     font-size: .875rem;
 }
 
+
 /* ========================================
    HALAMAN PROFIL SAYA
 ======================================== */
 
+
 .profile-stack {
     display: grid;
+
 
     /* Membuat dua card sejajar */
     grid-template-columns: repeat(2, minmax(0, 1fr));
 
+
     gap: 1.5rem;
+
 
     /* Memperluas area agar cukup untuk dua card */
     width: 100%;
     max-width: 56rem;
 
+
     /* Menjaga tinggi card mengikuti kontennya */
     align-items: start;
 }
+
 
 /* Mencegah isi card melebar keluar kolom */
 .profile-stack > * {
     min-width: 0;
 }
+
 
 .profile-who {
     display: flex;
@@ -47,14 +58,17 @@
     flex-wrap: wrap;
 }
 
+
 .profile-who__name {
     font: 600 1.25rem/1.3 var(--font-display);
     margin: 0;
 }
 
+
 /* ========================================
    RESPONSIVE
 ======================================== */
+
 
 /* Tablet dan layar lebih kecil */
 @media (max-width: 900px) {
@@ -64,6 +78,7 @@
     }
 }
 
+
 /* Mobile */
 @media (max-width: 576px) {
     .profile-stack {
@@ -72,16 +87,19 @@
     }
 }
 
+
 /* Penyesuaian komponen akun staf */
 .account-form {
     box-sizing: border-box;
     width: 100%;
 }
 
+
 .account-form form {
     display: grid;
     gap: 1rem;
 }
+
 
 .account-form .form-actions {
     display: flex;
@@ -90,6 +108,7 @@
     gap: .75rem;
     margin-top: .5rem;
 }
+
 
 .account-self {
     display: inline-flex;
@@ -100,6 +119,7 @@
     background: rgba(202, 198, 174, .28);
 }
 
+
 .table-host,
 .table-wrap,
 .table-scroll {
@@ -107,10 +127,12 @@
     max-width: 100%;
 }
 
+
 .table-scroll {
     overflow-x: auto;
     overscroll-behavior-inline: contain;
 }
+
 
 .table__actions {
     display: flex;
@@ -120,32 +142,39 @@
     gap: .5rem;
 }
 
+
 .profile-stack {
     box-sizing: border-box;
 }
 
+
 .profile-who__name {
     color: var(--brown);
 }
+
 
 @media (max-width: 760px) {
     .account-form {
         max-width: 100%;
     }
 
+
     .account-form .form-actions {
         align-items: stretch;
         flex-direction: column;
     }
 
+
     .account-form .form-actions > * {
         width: 100%;
     }
+
 
     .table__actions {
         justify-content: flex-start;
     }
 }
+
 
 /* Penyempurnaan halaman akun staf M1 */
 .page-intro-row { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin:.25rem 0 1.25rem; }
