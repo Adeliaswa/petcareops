@@ -9,7 +9,7 @@ COPY . .
 RUN npm run build
 
 
-FROM php:8.2-apache
+FROM php:8.2-cli
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
@@ -17,14 +17,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libonig-dev \
     unzip \
     && docker-php-ext-install pdo_pgsql mbstring bcmath zip \
-        && rm -f /etc/apache2/mods-enabled/mpm_*.load \
-             /etc/apache2/mods-enabled/mpm_*.conf \
-    && a2enmod mpm_prefork rewrite \
-        && echo "=== ENABLED MPM MODULES ===" \
-    && ls -la /etc/apache2/mods-enabled/mpm* \
-    && echo "=== APACHE LOADED MODULES ===" \
-    && apache2ctl -M \
-    && sed -i 's/^Listen 80$/Listen 10000/' /etc/apache2/ports.conf \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -41,12 +33,8 @@ RUN composer install \
 
 COPY --from=frontend /app/public/build ./public/build
 
-RUN sed -ri 's/<VirtualHost \*:80>/<VirtualHost *:10000>/; s!/var/www/html!/var/www/html/public!g' \
-    /etc/apache2/sites-available/000-default.conf \
-    && printf '\n<Directory /var/www/html/public>\nAllowOverride All\nRequire all granted\n</Directory>\n' \
-    >> /etc/apache2/apache2.conf \
-    && chown -R www-data:www-data storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-EXPOSE 10000
+EXPOSE 8080
 
-CMD ["apache2-foreground"]
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
