@@ -8,38 +8,52 @@ use App\Models\GroomerTimeOff;
 use App\Models\Service;
 use App\Models\Customer;
 use App\Models\Pet;
-use Illuminate\Http\Request;
 use App\Models\Appointment;
+use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
     public function dashboard()
     {
-        // Ringkasan dashboard diambil langsung dari data aktual database.
+        // Ringkasan dashboard
         $stats = [
             'appointments_today' => Appointment::query()
                 ->whereDate('mulai', today())
                 ->where('status', '!=', 'dibatalkan')
                 ->count(),
+
             'waiting_appointments' => Appointment::query()
                 ->where('status', 'menunggu')
                 ->count(),
+
             'customers' => Customer::query()->count(),
+
             'pets' => Pet::query()->count(),
+
             'active_groomers' => Groomer::query()
-                ->whereHas('user', fn ($query) => $query->where('is_active', true))
+                ->whereHas(
+                    'user',
+                    fn ($query) => $query->where('is_active', true)
+                )
                 ->count(),
         ];
 
         $todayAppointments = Appointment::query()
-            ->with(['pet.customer', 'groomer.user', 'services'])
+            ->with([
+                'pet.customer',
+                'groomer.user',
+                'services',
+            ])
             ->whereDate('mulai', today())
             ->where('status', '!=', 'dibatalkan')
             ->orderBy('mulai')
             ->limit(6)
             ->get();
 
-        return view('dashboard', compact('stats', 'todayAppointments'));
+        return view(
+            'dashboard',
+            compact('stats', 'todayAppointments')
+        );
     }
 
     public function adminServices()
@@ -58,7 +72,10 @@ class PageController extends Controller
             ->orderBy('key')
             ->paginate(15);
 
-        return view('admin.duration-factors.index', compact('factors'));
+        return view(
+            'admin.duration-factors.index',
+            compact('factors')
+        );
     }
 
     public function adminGroomers()
@@ -111,131 +128,177 @@ class PageController extends Controller
         return view('admin.time-off.index', compact('timeOffs'));
     }
 
+    /**
+     * Daftar appointment untuk admin dan resepsionis.
+     */
     public function staffAppointments()
-{
-    $appointments = Appointment::query()
-        ->with([
+    {
+        $appointments = Appointment::query()
+            ->with([
+                'pet.customer',
+                'groomer.user',
+                'services',
+            ])
+            ->latest('mulai')
+            ->paginate(15);
+
+        return view(
+            'staff.appointments.index',
+            compact('appointments')
+        );
+    }
+
+    /**
+     * Detail appointment M5 + integrasi Invoice M6.
+     */
+    public function staffAppointmentDetail(Appointment $appointment)
+    {
+        // Ambil seluruh relasi yang diperlukan halaman detail.
+        $appointment->load([
             'pet.customer',
             'groomer.user',
             'services',
-        ])
-        ->latest('mulai')
-        ->paginate(15);
+            'groomingRecord',
+            'invoice',
+        ]);
 
-    return view('staff.appointments.index', compact('appointments'));
-}
+        // Kirim data appointment ke halaman detail.
+        return view(
+            'staff.appointments.show',
+            compact('appointment')
+        );
+    }
 
     public function staffCustomers(Request $request)
-{
-    $search = trim($request->input('search', ''));
+    {
+        $search = trim($request->input('search', ''));
 
-    $customers = Customer::query()
-        ->withCount('pets')
-        ->when($search !== '', function ($query) use ($search) {
-            $query->where(function ($query) use ($search) {
-                $query->whereRaw('LOWER(nama) LIKE ?', [
-                    '%' . strtolower($search) . '%',
-                ])->orWhere('no_wa', 'like', '%' . $search . '%');
-            });
-        })
-        ->latest()
-        ->paginate(15)
-        ->withQueryString();
+        $customers = Customer::query()
+            ->withCount('pets')
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->whereRaw('LOWER(nama) LIKE ?', [
+                        '%' . strtolower($search) . '%',
+                    ])->orWhere('no_wa', 'like', '%' . $search . '%');
+                });
+            })
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
 
-    return view('staff.customers.index', compact('customers'));
-}
+        return view(
+            'staff.customers.index',
+            compact('customers')
+        );
+    }
 
     public function staffPets(Request $request)
-{
-    $search = trim($request->input('search', ''));
+    {
+        $search = trim($request->input('search', ''));
 
-    $pets = Pet::query()
-        ->with('customer:id,nama,no_wa')
-        ->when($search !== '', function ($query) use ($search) {
-            $query->where(function ($query) use ($search) {
-                $query->whereRaw('LOWER(nama) LIKE ?', [
-                    '%' . strtolower($search) . '%',
-                ])
-                ->orWhereRaw('LOWER(spesies) LIKE ?', [
-                    '%' . strtolower($search) . '%',
-                ])
-                ->orWhereRaw('LOWER(ras) LIKE ?', [
-                    '%' . strtolower($search) . '%',
-                ])
-                ->orWhereHas('customer', function ($customerQuery) use ($search) {
-                    $customerQuery->whereRaw('LOWER(nama) LIKE ?', [
+        $pets = Pet::query()
+            ->with('customer:id,nama,no_wa')
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->whereRaw('LOWER(nama) LIKE ?', [
                         '%' . strtolower($search) . '%',
-                    ]);
+                    ])
+                    ->orWhereRaw('LOWER(spesies) LIKE ?', [
+                        '%' . strtolower($search) . '%',
+                    ])
+                    ->orWhereRaw('LOWER(ras) LIKE ?', [
+                        '%' . strtolower($search) . '%',
+                    ])
+                    ->orWhereHas('customer', function ($customerQuery) use ($search) {
+                        $customerQuery->whereRaw('LOWER(nama) LIKE ?', [
+                            '%' . strtolower($search) . '%',
+                        ]);
+                    });
                 });
-            });
-        })
-        ->latest()
-        ->paginate(15)
-        ->withQueryString();
+            })
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
 
-    return view('staff.pets.index', compact('pets'));
-}
+        return view(
+            'staff.pets.index',
+            compact('pets')
+        );
+    }
 
     public function publicHome()
     {
         $services = Service::query()
             ->where('aktif', true)
             ->orderBy('nama')
-            ->get(['id', 'nama', 'deskripsi', 'durasi_dasar', 'harga']);
+            ->get([
+                'id',
+                'nama',
+                'deskripsi',
+                'durasi_dasar',
+                'harga',
+            ]);
 
         return view('public.home', compact('services'));
     }
 
     public function publicBooking()
-{
-    $services = Service::query()
-        ->where('aktif', true)
-        ->orderBy('nama')
-        ->get();
+    {
+        $services = Service::query()
+            ->where('aktif', true)
+            ->orderBy('nama')
+            ->get();
 
-    $factors = DurationFactor::query()
-        ->orderBy('kategori')
-        ->orderBy('key')
-        ->get();
+        $factors = DurationFactor::query()
+            ->orderBy('kategori')
+            ->orderBy('key')
+            ->get();
 
-    return view('booking.create', compact('services', 'factors'));
-}
+        return view(
+            'booking.create',
+            compact('services', 'factors')
+        );
+    }
 
     public function staffBooking()
-{
-    $services = Service::query()
-        ->where('aktif', true)
-        ->orderBy('nama')
-        ->get();
+    {
+        $services = Service::query()
+            ->where('aktif', true)
+            ->orderBy('nama')
+            ->get();
 
-    $factors = DurationFactor::query()
-        ->orderBy('kategori')
-        ->orderBy('key')
-        ->get();
+        $factors = DurationFactor::query()
+            ->orderBy('kategori')
+            ->orderBy('key')
+            ->get();
 
-    return view(
-        'staff.booking.create',
-        compact('services', 'factors')
-    );
-}
+        return view(
+            'staff.booking.create',
+            compact('services', 'factors')
+        );
+    }
+
     public function groomerTasks()
-{
-    $groomer = auth()->user()->groomer;
+    {
+        $groomer = auth()->user()->groomer;
 
-    $appointments = Appointment::query()
-        ->with([
-            'pet.customer',
-            'services',
-        ])
-        ->when(
-            $groomer,
-            fn ($query) => $query->where('groomer_id', $groomer->id),
-            fn ($query) => $query->whereRaw('1 = 0')
-        )
-        ->where('status', '!=', 'dibatalkan')
-        ->orderByDesc('mulai')
-        ->paginate(15);
+        $appointments = Appointment::query()
+            ->with([
+                'pet.customer',
+                'services',
+            ])
+            ->when(
+                $groomer,
+                fn ($query) => $query->where('groomer_id', $groomer->id),
+                fn ($query) => $query->whereRaw('1 = 0')
+            )
+            ->where('status', '!=', 'dibatalkan')
+            ->orderByDesc('mulai')
+            ->paginate(15);
 
-    return view('groomer.tasks.index', compact('groomer', 'appointments'));
-}
+        return view(
+            'groomer.tasks.index',
+            compact('groomer', 'appointments')
+        );
+    }
 }

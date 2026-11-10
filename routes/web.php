@@ -17,6 +17,8 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReminderController;
+use App\Http\Controllers\InvoiceController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -374,6 +376,56 @@ Route::middleware(['auth', 'active'])->group(function () {
                 'cancel',
             ])->name('appointments.cancel');
 
+            // ==========================================
+// M6: INVOICE DAN PEMBAYARAN
+// ==========================================
+
+// Membuat invoice dari appointment
+Route::post('/appointments/{appointment}/invoice', [
+    InvoiceController::class,
+    'store',
+])->name('appointments.invoice.store');
+
+// Melihat detail invoice
+Route::get('/invoices/{invoice}', [
+    InvoiceController::class,
+    'show',
+])->name('invoices.show');
+
+// Mencetak invoice
+Route::get('/invoices/{invoice}/print', [
+    InvoiceController::class,
+    'print',
+])->name('invoices.print');
+
+// Mencatat pembayaran
+Route::post('/invoices/{invoice}/payments', [
+    InvoiceController::class,
+    'storePayment',
+])->name('invoices.payments.store');
+
+// Menghapus pembayaran khusus admin
+Route::delete('/payments/{payment}', [
+    InvoiceController::class,
+    'destroyPayment',
+])->middleware('role:admin')->name('payments.destroy');
+
+
+// ==========================================
+// M6: PENGINGAT
+// ==========================================
+
+// Halaman pengingat
+Route::get('/pengingat', [
+    ReminderController::class,
+    'index',
+])->name('pengingat.index');
+
+// Menjalankan pengingat
+Route::post('/pengingat/jalankan', [
+    ReminderController::class,
+    'jalankan',
+])->middleware('throttle:5,1')->name('pengingat.jalankan');
 
             // Kalender workload groomer M5
             Route::get('/kalender-groomer', [

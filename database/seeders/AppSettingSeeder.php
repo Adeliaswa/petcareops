@@ -22,6 +22,9 @@ class AppSettingSeeder extends Seeder
             ['key' => 'jam_buka', 'value' => '08:00-17:00'],
             ['key' => 'kontak_wa', 'value' => ''],
             ['key' => 'alamat', 'value' => ''],
+
+            ['key' => 'jarak_pengingat_hari', 'value' => '28'],
+            ['key' => 'nama_salon', 'value' => 'PetCareOps'],
         ];
 
         foreach ($settings as $setting) {

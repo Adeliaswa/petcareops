@@ -58,4 +58,16 @@ class Appointment extends Model
     {
         return $this->hasOne(GroomingRecord::class);
     }
+
+    public function reminder(): HasOne
+{
+    return $this->hasOne(
+        Reminder::class,
+        'servis_terakhir_id'
+    );
+}
+public function invoice(): HasOne
+{
+    return $this->hasOne(Invoice::class);
+}
 }

@@ -1,3 +1,4 @@
+
 @php
     $user = auth()->user();
 
@@ -45,6 +46,14 @@
                         icon="calendar"
                         label="Appointment"
                         :active="request()->routeIs('staf.appointments.*')"
+                    />
+
+                    {{-- Pengingat Grooming M6 --}}
+                    <x-sidebar-link
+                        :href="route('staf.pengingat.index')"
+                        icon="bell"
+                        label="Pengingat Grooming"
+                        :active="request()->routeIs('staf.pengingat.*')"
                     />
 
                     <p class="nav__title">Data</p>
