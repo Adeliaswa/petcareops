@@ -1,0 +1,61 @@
+/* PB-22 Appointment management */
+.appointments-page{--ap-ink:#40352f;--ap-muted:#8a7e75;--ap-line:#eee5dc;--ap-cream:#fbf8f3;--ap-brown:#765642;--ap-sage:#dfe9dc;--ap-pink:#f7e5e6;color:var(--ap-ink);padding-bottom:2rem}
+.appointments-intro{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;margin-bottom:1.5rem}
+.appointments-eyebrow{display:inline-block;color:#9a785f;font-size:.7rem;font-weight:800;letter-spacing:.15em}
+.appointments-title{font-size:clamp(1.7rem,3vw,2.25rem);font-weight:700;margin:.35rem 0;color:var(--ap-ink)}
+.appointments-description{color:var(--ap-muted);margin:0}
+.appointments-add-button,.appointments-filter-button{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border:0;border-radius:12px;background:var(--ap-brown);color:#fff;padding:.8rem 1.1rem;font-weight:700;text-decoration:none;cursor:pointer}
+.appointments-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;margin-bottom:1.25rem}
+.appointments-summary article{display:flex;flex-direction:column;gap:.25rem;padding:1.15rem 1.25rem;background:#fff;border:1px solid var(--ap-line);border-radius:17px;box-shadow:0 5px 18px #59422a08}
+.appointments-summary article span{font-size:.82rem;color:var(--ap-muted)}
+.appointments-summary article strong{font-size:1.8rem;line-height:1.2}
+.appointments-summary article small{font-size:.72rem;color:#a1958b}
+.appointments-filters{display:grid;grid-template-columns:minmax(200px,1.6fr) repeat(3,minmax(135px,1fr)) auto auto;gap:.75rem;align-items:end;padding:1rem;background:var(--ap-cream);border:1px solid var(--ap-line);border-radius:17px;margin-bottom:1.25rem}
+.appointments-filters label,.appointments-modal label{display:flex;flex-direction:column;gap:.4rem;font-size:.76rem;font-weight:700;color:#75675d}
+.appointments-filters input,.appointments-filters select,.appointments-modal textarea{width:100%;min-height:42px;border:1px solid #e6dcd2;border-radius:10px;background:#fff;padding:.65rem .75rem;color:var(--ap-ink);outline:none}
+.appointments-filters input:focus,.appointments-filters select:focus,.appointments-modal textarea:focus{border-color:#a98a70;box-shadow:0 0 0 3px #a98a7020}
+.appointments-reset-button{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:.65rem .85rem;border:1px solid #e5d9ce;border-radius:10px;background:#fff;color:#705d4d;text-decoration:none;font-weight:700;cursor:pointer}
+.appointments-panel{background:#fff;border:1px solid var(--ap-line);border-radius:19px;overflow:hidden;box-shadow:0 8px 26px #59422a08}
+.appointments-panel-header{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.25rem 1.4rem;border-bottom:1px solid var(--ap-line)}
+.appointments-panel-header h2{font-size:1.05rem;font-weight:800;margin:0 0 .25rem}
+.appointments-panel-header p{margin:0;color:var(--ap-muted);font-size:.8rem}
+.appointments-total-badge{background:var(--ap-cream);border-radius:999px;padding:.45rem .75rem;color:#806c5c;font-size:.75rem;font-weight:700}
+.appointments-table-wrapper{overflow-x:auto}
+.appointments-table{width:100%;border-collapse:collapse;min-width:950px}
+.appointments-table th{padding:.85rem 1rem;text-align:left;background:#fcfaf7;color:#938478;font-size:.69rem;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
+.appointments-table td{padding:1rem;border-top:1px solid #f1ebe5;font-size:.82rem;vertical-align:middle}
+.appointments-table td small{display:block;color:var(--ap-muted);font-size:.72rem;margin-top:.2rem}
+.appointments-source{font-size:.65rem!important;text-transform:capitalize}
+.appointments-service-list{display:flex;flex-wrap:wrap;gap:.3rem;max-width:180px}
+.appointments-service-list span{background:#f5f0e9;border-radius:7px;padding:.3rem .45rem;font-size:.68rem;color:#725d4c}
+.appointments-status{display:inline-flex;border-radius:999px;padding:.38rem .65rem;font-size:.7rem;font-weight:800;white-space:nowrap;background:#f1eee9;color:#766b61}
+.appointments-status--menunggu{background:#fff1d8;color:#94621d}
+.appointments-status--dikerjakan{background:#e5efff;color:#426b9e}
+.appointments-status--selesai{background:#e5f1e4;color:#4d7950}
+.appointments-status--dijemput{background:#e3f2ed;color:#34745e}
+.appointments-status--dibatalkan{background:#fae7e7;color:#a44e4e}
+.appointments-actions{display:flex;flex-wrap:wrap;gap:.4rem;min-width:130px}
+.appointments-action{border:0;border-radius:8px;padding:.48rem .65rem;font-size:.7rem;font-weight:800;cursor:pointer}
+.appointments-action:disabled{opacity:.55;cursor:wait}
+.appointments-action--start{background:#e8eee2;color:#55714d}
+.appointments-action--complete{background:#e5efff;color:#426b9e}
+.appointments-action--pickup{background:#e3f2ed;color:#34745e}
+.appointments-action--cancel{background:#fae7e7;color:#a44e4e}
+.appointments-muted{color:#a49a91;font-size:.75rem}
+.appointments-pagination{padding:1rem 1.25rem;display:flex;justify-content:flex-end;border-top:1px solid var(--ap-line)}
+.appointments-empty{text-align:center;padding:3.5rem 1rem}
+.appointments-empty>span{font-size:2rem}
+.appointments-empty h3{margin:.5rem 0 .25rem;font-weight:800}
+.appointments-empty p{margin:0;color:var(--ap-muted);font-size:.85rem}
+.appointments-feedback{padding:.8rem 1rem;margin-bottom:1rem;background:#eef5eb;border:1px solid #dce9d7;border-radius:10px;color:#4d7048;font-size:.85rem}
+.appointments-modal-backdrop{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:1rem;background:#241b16a6}
+.appointments-modal{position:relative;width:min(100%,480px);background:#fff;border-radius:20px;padding:1.6rem;box-shadow:0 25px 80px #0003}
+.appointments-modal h2{font-size:1.35rem;font-weight:800;margin:.45rem 0}
+.appointments-modal p{font-size:.88rem;color:var(--ap-muted);margin-bottom:1rem}
+.appointments-modal textarea{min-height:95px;resize:vertical}
+.appointments-modal-note{display:block;margin-top:.5rem;color:#9a806c;font-size:.7rem}
+.appointments-modal-close{position:absolute;right:1rem;top:.8rem;border:0;background:transparent;font-size:1.7rem;color:#8a7e75;cursor:pointer}
+.appointments-modal-actions{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.25rem}
+[x-cloak]{display:none!important}
+@media(max-width:1050px){.appointments-filters{grid-template-columns:repeat(3,minmax(0,1fr))}.appointments-search{grid-column:span 3}}
+@media(max-width:700px){.appointments-intro{align-items:flex-start;flex-direction:column}.appointments-add-button{width:100%}.appointments-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.appointments-summary article{padding:.9rem}.appointments-summary article strong{font-size:1.5rem}.appointments-filters{grid-template-columns:1fr 1fr}.appointments-search{grid-column:span 2}.appointments-filter-button,.appointments-reset-button{width:100%}.appointments-panel-header{padding:1rem;align-items:flex-start}.appointments-total-badge{font-size:.65rem}}

@@ -32,3 +32,10 @@
 @import './pages/profile.css';
 @import './pages/staff-appointments.css';
 @import './pages/booking.css';
+
+/* Halaman publik M3 */
+@import './pages/public.css';
+@import './pages/public-booking.css';
+
+/* Appointment Management PB-22 */
+@import './pages/appointments.css';

@@ -43,8 +43,17 @@ class BookingController extends Controller
 
         return response()->json([
             'dikenal' => true,
+            'customer' => [
+                'id' => $customer->id,
+                'nama' => $customer->nama,
+                'no_wa' => $customer->no_wa,
+            ],
             'pets' => $customer->pets()
-                ->select(['id', 'nama'])
+                ->select([
+                    'id', 'customer_id', 'nama', 'spesies', 'ras',
+                    'ukuran', 'jenis_bulu', 'perilaku', 'alergi',
+                    'catatan_kesehatan',
+                ])
                 ->orderBy('nama')
                 ->get(),
         ]);
@@ -112,6 +121,50 @@ class BookingController extends Controller
                 'message' => $e->getMessage(),
             ], 422);
         }
+    }
+
+
+    /**
+     * Pencarian pelanggan publik berdasarkan nomor WhatsApp yang dinormalisasi.
+     * Endpoint ini hanya mengembalikan data bila nomor cocok persis.
+     */
+    public function cariPelangganPublik(
+        Request $request,
+        PhoneNormalizer $phoneNormalizer
+    ): JsonResponse {
+        $data = $request->validate([
+            'q' => ['required', 'string', 'max:30'],
+        ]);
+
+        try {
+            $nomor = $phoneNormalizer->normalize($data['q']);
+        } catch (InvalidArgumentException) {
+            return response()->json(['data' => []]);
+        }
+
+        $customer = Customer::query()
+            ->where('no_wa', $nomor)
+            ->first();
+
+        if (! $customer) {
+            return response()->json(['data' => []]);
+        }
+
+        return response()->json([
+            'data' => [[
+                'id' => $customer->id,
+                'nama' => $customer->nama,
+                'no_wa' => $customer->no_wa,
+                'pets' => $customer->pets()
+                    ->select([
+                        'id', 'customer_id', 'nama', 'spesies', 'ras',
+                        'ukuran', 'jenis_bulu', 'perilaku', 'alergi',
+                        'catatan_kesehatan',
+                    ])
+                    ->orderBy('nama')
+                    ->get(),
+            ]],
+        ]);
     }
 
     public function cariPelanggan(Request $request): JsonResponse

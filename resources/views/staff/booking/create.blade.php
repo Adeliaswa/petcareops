@@ -323,61 +323,302 @@
                             <span x-text="estimation?.durasi_menit"></span> menit
                         </strong>
                         <div class="booking-estimation-details">
-                            <template x-for="(detail, index) in (estimation?.rincian || [])"
+                            <div class="booking-estimation-row">
+                                <span>Durasi dasar layanan</span>
+                                <strong x-text="(estimation?.rincian?.total_durasi_dasar ?? '-') + ' menit'"></strong>
+                            </div>
+
+                            <template x-for="service in (estimation?.rincian?.layanan || [])"
+                                      :key="service.id">
+                                <div class="booking-estimation-row booking-estimation-service">
+                                    <span x-text="service.nama"></span>
+                                    <strong x-text="service.durasi_dasar + ' menit'"></strong>
+                                </div>
+                            </template>
+
+                            <template x-for="category in ['ukuran', 'jenis_bulu', 'perilaku']"
+                                      :key="category">
+                                <div class="booking-estimation-row"
+                                     x-show="estimation?.rincian?.faktor?.[category]">
+                                    <span x-text="({ ukuran: 'Faktor ukuran', jenis_bulu: 'Faktor jenis bulu', perilaku: 'Faktor perilaku' })[category]"></span>
+                                    <strong x-text="estimation?.rincian?.faktor?.[category]?.label + ' (×' + estimation?.rincian?.faktor?.[category]?.multiplier + ')' "></strong>
+                                </div>
+                            </template>
+
+                            <div class="booking-estimation-row">
+                                <span>Setelah faktor ukuran</span>
+                                <strong x-text="(estimation?.rincian?.durasi_setelah_ukuran ?? '-') + ' menit'"></strong>
+                            </div>
+                            <div class="booking-estimation-row">
+                                <span>Setelah faktor bulu</span>
+                                <strong x-text="(estimation?.rincian?.durasi_setelah_bulu ?? '-') + ' menit'"></strong>
+                            </div>
+                            <div class="booking-estimation-row">
+                                <span>Setelah faktor perilaku</span>
+                                <strong x-text="(estimation?.rincian?.durasi_setelah_perilaku ?? '-') + ' menit'"></strong>
+                            </div>
+
+                            <template x-for="(item, index) in (estimation?.rincian?.tambahan || [])"
                                       :key="index">
-                                <span x-text="typeof detail === 'string' ? detail : JSON.stringify(detail)"></span>
+                                <div class="booking-estimation-row">
+                                    <span x-text="'Tambahan ' + item.label"></span>
+                                    <strong x-text="'+' + item.menit + ' menit'"></strong>
+                                </div>
                             </template>
+
+                            <div class="booking-estimation-row">
+                                <span>Total tambahan</span>
+                                <strong x-text="'+' + (estimation?.rincian?.total_menit_tambahan ?? 0) + ' menit'"></strong>
+                            </div>
+                            <div class="booking-estimation-row">
+                                <span>Buffer pembersihan</span>
+                                <strong x-text="'+' + (estimation?.rincian?.buffer_pembersihan ?? 0) + ' menit'"></strong>
+                            </div>
+                            <div class="booking-estimation-row">
+                                <span>Sebelum pembulatan</span>
+                                <strong x-text="(estimation?.rincian?.durasi_sebelum_pembulatan ?? '-') + ' menit'"></strong>
+                            </div>
+                            <div class="booking-estimation-row booking-estimation-total">
+                                <span>Durasi setelah pembulatan</span>
+                                <strong x-text="(estimation?.rincian?.menit_total ?? estimation?.durasi_menit ?? '-') + ' menit'"></strong>
+                            </div>
                         </div>
                     </div>
                 </section>
 
-                {{-- 4. JADWAL --}}
-                <section class="booking-card">
-                    <div class="booking-section-heading">
-                        <span class="booking-step">04</span>
-                        <div>
-                            <h2>Pilih Jadwal</h2>
-                            <p>Tentukan tanggal dan waktu kedatangan.</p>
+
+{{-- ========================================= --}}
+{{-- 04. PILIH JADWAL - BOOKING WALK-IN --}}
+{{-- ========================================= --}}
+
+<section class="booking-card booking-schedule-card">
+
+    <div class="booking-section-heading">
+        <span class="booking-step">04</span>
+
+        <div>
+            <h2>Pilih Jadwal</h2>
+            <p>Tentukan tanggal dan waktu kedatangan.</p>
+        </div>
+    </div>
+
+    {{-- HEADER JADWAL MINGGUAN --}}
+    <div class="booking-week-heading">
+        <div>
+            <strong>Jadwal 7 Hari ke Depan</strong>
+            <span>Pilih tanggal berdasarkan ketersediaan groomer.</span>
+        </div>
+
+        <span class="booking-week-badge">
+            <span></span>
+            Live availability
+        </span>
+    </div>
+
+    {{-- PILIH TANGGAL MANUAL --}}
+    <div class="booking-field booking-manual-date">
+        <label for="booking-manual-date">
+            Atau pilih tanggal secara manual
+        </label>
+
+        <input
+            id="booking-manual-date"
+            type="date"
+            x-model="bookingDate"
+            :min="today"
+            :disabled="!estimation || loadingSlots"
+            @change="selectBookingDate($event.target.value)"
+        >
+
+        <p class="booking-hint">
+            Resepsionis dapat memilih tanggal di luar rekomendasi
+            mingguan. Ketersediaan akan diperiksa kembali oleh sistem.
+        </p>
+    </div>
+
+    {{-- STATUS LOADING JADWAL MINGGUAN --}}
+    <div
+        class="booking-week-list"
+        x-show="estimation"
+        x-cloak
+    >
+
+        <template x-if="loadingSlots">
+            <div class="booking-week-loading">
+                Memeriksa ketersediaan groomer selama 7 hari...
+            </div>
+        </template>
+
+        {{-- KALENDER 7 HARI --}}
+        <template x-if="!loadingSlots && weeklySchedule.length">
+            <div class="booking-week-grid">
+
+                <template
+                    x-for="day in weeklySchedule"
+                    :key="day.date"
+                >
+                    <button
+                        type="button"
+                        class="booking-week-card"
+                        :class="{
+                            'is-active': bookingDate === day.date,
+                            'is-recommended': recommendedDays.includes(day.date),
+                            'is-full': !day.slots || day.slots.length === 0
+                        }"
+                        @click="selectBookingDate(day.date)"
+                    >
+
+                        <div class="booking-week-card__top">
+
+                            <span
+                                class="booking-week-card__day"
+                                x-text="formatWeekDay(day.date)"
+                            ></span>
+
+                            <span
+                                class="booking-week-card__tag"
+                                x-show="recommendedDays.includes(day.date)"
+                            >
+                                Saran sistem
+                            </span>
+
                         </div>
-                    </div>
 
-                    <div class="booking-field">
-                        <label for="booking-date">Tanggal Booking *</label>
-                        <input
-                            id="booking-date"
-                            type="date"
-                            x-model="bookingDate"
-                            @change="findSlots()"
-                            :min="today"
-                        >
-                    </div>
+                        <strong
+                            class="booking-week-card__date"
+                            x-text="formatDayNumber(day.date) + ' ' + formatMonth(day.date)"
+                        ></strong>
 
-                    <div class="booking-slot-area">
-                        <div class="booking-slot-heading">
-                            <strong>Slot Tersedia</strong>
-                            <span x-show="loadingSlots">Mencari slot...</span>
+                        <small
+                            class="booking-week-card__meta"
+                            x-text="
+                                day.slots && day.slots.length
+                                    ? day.slots.length + ' slot tersedia'
+                                    : 'Belum tersedia'
+                            "
+                        ></small>
+
+                    </button>
+                </template>
+
+            </div>
+        </template>
+
+        {{-- JIKA JADWAL GAGAL DIMUAT --}}
+        <template x-if="!loadingSlots && !weeklySchedule.length">
+            <div class="booking-empty">
+                <strong>Jadwal belum tersedia</strong>
+                <p>
+                    Sistem belum mendapatkan informasi jadwal.
+                    Silakan coba hitung estimasi kembali.
+                </p>
+            </div>
+        </template>
+
+    </div>
+
+    {{-- TANGGAL YANG DIPILIH --}}
+    <div
+        class="booking-selected-date"
+        x-show="bookingDate && estimation"
+        x-cloak
+    >
+        <h3>
+            Jadwal untuk tanggal
+            <span x-text="formatLongDate(bookingDate)"></span>
+        </h3>
+    </div>
+
+    {{-- PILIH SLOT --}}
+    <div class="booking-slot-area">
+
+        <div class="booking-slot-heading">
+            <strong>Pilih Jam Kedatangan</strong>
+        </div>
+
+        <template x-if="loadingSlots">
+            <div class="booking-empty">
+                Memeriksa slot dan ketersediaan groomer...
+            </div>
+        </template>
+
+        {{-- SLOT TERSEDIA --}}
+        <template x-if="!loadingSlots && slots.length > 0">
+
+            <div class="booking-slot-grid">
+
+                <template
+                    x-for="slot in slots"
+                    :key="slot.mulai + '-' + (slot.groomer_id ?? '')"
+                >
+
+                    <button
+                        type="button"
+                        class="booking-slot-card"
+                        :class="{
+                            'is-active': selectedSlot
+                                && selectedSlot.mulai === slot.mulai
+                                && selectedSlot.selesai === slot.selesai
+                                && selectedSlot.groomer_id === slot.groomer_id
+                        }"
+                        @click="selectSlot(slot)"
+                    >
+
+                        <div class="booking-slot-card__content">
+
+                            <strong
+                                x-text="formatTime(slot.mulai) + ' - ' + formatTime(slot.selesai)"
+                            ></strong>
+
+                            <small
+                                x-text="slot.nama_groomer
+                                    ? 'Groomer: ' + slot.nama_groomer
+                                    : 'Groomer tersedia'"
+                            ></small>
+
                         </div>
 
-                        <div class="booking-slot-grid">
-                            <template x-for="slot in slots"
-                                      :key="slot.mulai">
-                                <button
-                                    type="button"
-                                    class="booking-slot"
-                                    :class="{ 'is-selected': selectedSlot?.mulai === slot.mulai }"
-                                    @click="selectSlot(slot)"
-                                >
-                                    <strong x-text="formatTime(slot.mulai)"></strong>
-                                    <small x-text="slot.nama_groomer || 'Groomer tersedia'"></small>
-                                </button>
-                            </template>
-                        </div>
+                        <span class="booking-slot-card__state">
+                            Pilih
+                        </span>
 
-                        <p class="booking-empty"
-                           x-show="slotMessage"
-                           x-text="slotMessage"></p>
-                    </div>
-                </section>
+                    </button>
+
+                </template>
+
+            </div>
+
+        </template>
+
+        {{-- TIDAK ADA SLOT --}}
+        <template
+            x-if="!loadingSlots && bookingDate && estimation && slots.length === 0"
+        >
+            <div class="booking-empty">
+
+                <strong>Belum ada slot tersedia</strong>
+
+                <p
+                    x-text="slotMessage || 'Belum ada groomer yang sesuai dengan kebutuhan hewan pada tanggal ini.'"
+                ></p>
+
+                <p>
+                    Silakan pilih tanggal lain atau periksa kembali
+                    rekomendasi jadwal mingguan.
+                </p>
+
+            </div>
+        </template>
+
+        <p class="booking-hint">
+            Jadwal ditampilkan berdasarkan ketersediaan groomer
+            dan estimasi durasi layanan. Ketersediaan akan diperiksa
+            kembali saat booking disimpan.
+        </p>
+
+    </div>
+
+</section>
 
                 {{-- 5. CATATAN DAN KONFIRMASI --}}
                 <section class="booking-card">

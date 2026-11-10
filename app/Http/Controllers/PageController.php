@@ -176,6 +176,16 @@ class PageController extends Controller
     return view('staff.pets.index', compact('pets'));
 }
 
+    public function publicHome()
+    {
+        $services = Service::query()
+            ->where('aktif', true)
+            ->orderBy('nama')
+            ->get(['id', 'nama', 'deskripsi', 'durasi_dasar', 'harga']);
+
+        return view('public.home', compact('services'));
+    }
+
     public function publicBooking()
 {
     $services = Service::query()

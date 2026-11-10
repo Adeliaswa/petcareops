@@ -14,15 +14,13 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AppointmentController;
 
 Route::get('/', function () {
-
-    // Jika belum login, arahkan ke halaman login
-    if (!auth()->check()) {
-        return redirect()->route('login');
+    if (! auth()->check()) {
+        return app(PageController::class)->publicHome();
     }
 
-    // Jika sudah login, arahkan sesuai role
     $user = auth()->user();
 
     if ($user->hasRole('admin')) {
@@ -38,7 +36,6 @@ Route::get('/', function () {
     }
 
     abort(403, 'Akun tidak memiliki role yang sesuai.');
-
 })->name('home');
 
 // Halaman booking publik
@@ -54,6 +51,11 @@ Route::prefix('booking')
             BookingController::class,
             'identifikasi',
         ])->name('identifikasi');
+
+        Route::get('/pelanggan', [
+            BookingController::class,
+            'cariPelangganPublik',
+        ])->name('pelanggan');
 
         Route::post('/estimasi', [
             BookingEstimationController::class,
@@ -71,13 +73,16 @@ Route::prefix('booking')
         ])->name('konfirmasi');
     });
 
-// Status booking publik (JSON)
+// Halaman status booking dan endpoint data status (tanpa login).
 Route::get('/status/{token}', [
     BookingStatusController::class,
     'show',
-])
-    ->middleware('throttle:30,1')
-    ->name('booking.status');
+])->middleware('throttle:30,1')->name('booking.status');
+
+Route::get('/status/{token}/data', [
+    BookingStatusController::class,
+    'data',
+])->middleware('throttle:30,1')->name('booking.status.data');
 
 Route::middleware(['auth', 'active'])->group(function () {
 
@@ -272,10 +277,23 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->middleware('role:admin,resepsionis')
         ->group(function () {
 
-            Route::get('/appointments', [
-                PageController::class,
-                'staffAppointments',
-            ])->name('appointments.index');
+        // Halaman appointment resepsionis
+        Route::get('/appointments', [
+            AppointmentController::class,
+            'index',
+        ])->name('appointments.index');
+
+        // Perubahan status appointment
+        Route::patch('/appointments/{appointment}/status', [
+            AppointmentController::class,
+            'updateStatus',
+        ])->name('appointments.status');
+
+        // Pembatalan appointment
+        Route::patch('/appointments/{appointment}/cancel', [
+            AppointmentController::class,
+            'cancel',
+        ])->name('appointments.cancel');
 
             // Halaman Blade pemilik dan hewan
             Route::prefix('halaman')->name('pages.')->group(function () {
@@ -297,12 +315,6 @@ Route::middleware(['auth', 'active'])->group(function () {
                 DurationFactorController::class,
                 'options',
             ])->name('faktor-durasi.options');
-
-            // CRUD pemilik (JSON)
-            Route::resource('pemilik', CustomerController::class)
-                ->parameters(['pemilik' => 'customer'])
-                ->except(['create', 'edit']);
-
 
             // CRUD pemilik (JSON)
             Route::resource('pemilik', CustomerController::class)
