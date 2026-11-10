@@ -1,0 +1,13 @@
+.role-badge, .status-badge { --badge-radius: 999px; display: inline-flex; align-items: center; gap: .375rem; font: 600 .8125rem/1.4 var(--font-body); white-space: nowrap; padding: .1875rem .75rem; border-radius: var(--badge-radius); border: 1px solid transparent; }
+.badge--square { --badge-radius: .5rem; }
+.badge--sm { font-size: .75rem; padding: .0625rem .5rem; }
+
+.role-badge--admin { background: var(--brown); color: var(--pink); border-color: var(--brown); }
+.role-badge--resepsionis { background: var(--pink); color: var(--brown); border-color: var(--pink); }
+.role-badge--groomer { background: #f1e8e6; color: var(--brown); border-color: var(--rose); }
+
+.status-badge::before { content: ""; flex: none; width: .5rem; height: .5rem; border-radius: 50%; }
+.status-badge--aktif { background: #e1e8cd; color: #3d5226; border-color: #e1e8cd; }
+.status-badge--aktif::before { background: #5b7a34; }
+.status-badge--nonaktif { background: #fff; color: var(--muted); border-color: rgba(83, 62, 54, .22); }
+.status-badge--nonaktif::before { box-sizing: border-box; border: 1.5px solid #a8958f; background: transparent; }

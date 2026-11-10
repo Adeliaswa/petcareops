@@ -1,0 +1,843 @@
+
+/* =========================================
+   M6 — INTEGRASI DETAIL APPOINTMENT
+========================================= */
+
+.m6-appointment-invoice {
+    display: grid;
+    gap: .65rem;
+    padding: 1.1rem;
+}
+
+.m6-appointment-invoice h3 {
+    margin: 0;
+    font: 600 1.08rem var(--font-display);
+}
+
+.m6-appointment-invoice > p {
+    margin: 0;
+    color: var(--muted);
+    font-size: .78rem;
+    line-height: 1.6;
+}
+
+.m6-appointment-balance {
+    display: grid;
+    justify-items: start;
+    gap: .15rem;
+    padding: .85rem;
+    border-radius: .8rem;
+    background: #faf6f2;
+}
+
+.m6-appointment-balance strong {
+    font: 600 1.25rem var(--font-display);
+    font-variant-numeric: tabular-nums;
+}
+
+.m6-appointment-balance small {
+    color: var(--muted);
+    font-size: .68rem;
+}
+
+.m6-invoice-mini-info {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .15rem;
+    padding: .65rem 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+.m6-invoice-mini-info span {
+    color: var(--muted);
+    font-size: .68rem;
+}
+
+.m6-invoice-mini-info strong {
+    margin-bottom: .45rem;
+    font-size: .8rem;
+    overflow-wrap: anywhere;
+}
+
+.m6-invoice-mini-info strong:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   PET CARE OPS — M6
+   REMINDERS, WHATSAPP, INVOICE & PAYMENTS
+========================================================= */
+
+
+/* =========================================================
+   01. GENERAL PAGE
+========================================================= */
+
+.m6-page {
+    display: grid;
+    gap: 1.1rem;
+    color: var(--brown);
+    font: 400 .9375rem/1.6 var(--font-body);
+}
+
+.m6-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.m6-heading h2 {
+    margin: .15rem 0;
+    color: var(--brown);
+    font: 600 1.65rem/1.2 var(--font-display);
+}
+
+.m6-heading p {
+    margin: .35rem 0 0;
+    color: var(--muted);
+    font-size: .875rem;
+}
+
+
+/* =========================================================
+   02. REMINDER STATISTICS
+========================================================= */
+
+.m6-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .85rem;
+}
+
+.m6-stat {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    padding: 1rem 1.1rem;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.m6-stat > div {
+    display: grid;
+}
+
+.m6-stat small,
+.m6-stat span:last-child {
+    color: var(--muted);
+    font-size: .72rem;
+}
+
+.m6-stat strong {
+    color: var(--brown);
+    font: 600 1.5rem/1.25 var(--font-display);
+    font-variant-numeric: tabular-nums;
+}
+
+.m6-stat-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 2.7rem;
+    height: 2.7rem;
+    border-radius: .85rem;
+    font-size: 1.2rem;
+}
+
+.m6-icon-peach {
+    background: rgba(255, 197, 190, .45);
+}
+
+.m6-icon-sage {
+    background: rgba(202, 198, 174, .45);
+}
+
+.m6-icon-neutral {
+    background: rgba(83, 62, 54, .09);
+}
+
+
+/* =========================================================
+   03. REMINDER FILTER
+========================================================= */
+
+.m6-filter {
+    display: flex;
+    align-items: end;
+    gap: .7rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.m6-filter .m5-field {
+    width: min(20rem, 100%);
+}
+
+.m6-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+
+/* =========================================================
+   04. REMINDER LIST
+========================================================= */
+
+.m6-reminder-list {
+    padding: 0 1.25rem;
+}
+
+.m6-reminder-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.m6-reminder-row:last-child {
+    border-bottom: 0;
+}
+
+.m6-pet-avatar {
+    display: grid;
+    place-items: center;
+    flex: 0 0 2.9rem;
+    height: 2.9rem;
+    border-radius: 1rem;
+    background: #fff0ed;
+    color: #94675f;
+    font: 600 1.2rem var(--font-display);
+}
+
+.m6-reminder-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.m6-reminder-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .55rem;
+}
+
+.m6-reminder-title > strong {
+    color: var(--brown);
+    font-size: .9rem;
+}
+
+.m6-owner {
+    display: block;
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+.m6-reminder-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem 1.2rem;
+    margin-top: .45rem;
+    color: var(--muted);
+    font-size: .72rem;
+}
+
+.m6-reminder-meta b {
+    color: var(--brown);
+    font-weight: 600;
+}
+
+.m6-late {
+    color: #a34e47 !important;
+    font-weight: 700;
+}
+
+.m6-reminder-action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 9rem;
+}
+
+.m6-reminder-action small {
+    color: var(--muted);
+    font-size: .72rem;
+    text-align: right;
+}
+
+.m6-footnote {
+    margin: 0;
+    color: var(--muted);
+    font-size: .72rem;
+}
+
+
+/* =========================================================
+   05. PAYMENT STATUS
+========================================================= */
+
+.m6-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .3rem .6rem;
+    border-radius: 999px;
+    font-size: .68rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.m6-status--menunggu,
+.m6-status--belum_bayar {
+    background: #fff0d2;
+    color: #79581d;
+}
+
+.m6-status--terkirim,
+.m6-status--lunas {
+    background: #e8f1e6;
+    color: #426647;
+}
+
+.m6-status--ditutup {
+    background: #f0ece9;
+    color: #776b65;
+}
+
+.m6-status--sebagian {
+    background: #fff0e6;
+    color: #995b36;
+}
+
+
+/* =========================================================
+   06. INVOICE LAYOUT
+========================================================= */
+
+.m6-invoice-page {
+    gap: 1rem;
+}
+
+.m6-invoice-layout {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.55fr)
+        minmax(17rem, .8fr);
+    align-items: start;
+    gap: 1rem;
+}
+
+.m6-invoice-main {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+}
+
+
+/* =========================================================
+   07. INVOICE PAPER
+========================================================= */
+
+.m6-invoice-paper {
+    padding: 1.4rem;
+}
+
+.m6-invoice-brand {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.m6-brand-mark {
+    display: grid;
+    place-items: center;
+    width: 2.7rem;
+    height: 2.7rem;
+    border-radius: .85rem;
+    background: #fff0ed;
+    color: var(--brown);
+    font: 700 1rem var(--font-display);
+}
+
+.m6-invoice-brand > div:nth-child(2) strong,
+.m6-invoice-brand > div:nth-child(2) span {
+    display: block;
+}
+
+.m6-invoice-brand > div:nth-child(2) strong {
+    color: var(--brown);
+    font: 600 1.15rem var(--font-display);
+}
+
+.m6-invoice-brand > div:nth-child(2) span {
+    color: var(--muted);
+    font-size: .7rem;
+}
+
+.m6-invoice-tag {
+    margin-left: auto;
+    color: #b18b82;
+    font: 600 1rem var(--font-display);
+    letter-spacing: .1em;
+}
+
+
+/* =========================================================
+   08. INVOICE INFORMATION
+========================================================= */
+
+.m6-invoice-number,
+.m6-invoice-parties {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.m6-invoice-number {
+    border-bottom: 1px dashed var(--line);
+}
+
+.m6-invoice-number small,
+.m6-invoice-parties small {
+    display: block;
+    color: var(--muted);
+    font-size: .68rem;
+}
+
+.m6-invoice-number strong,
+.m6-invoice-parties strong,
+.m6-invoice-parties span {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.m6-invoice-number strong,
+.m6-invoice-parties strong {
+    margin-top: .2rem;
+    color: var(--brown);
+    font-size: .82rem;
+}
+
+.m6-invoice-parties span {
+    color: var(--muted);
+    font-size: .73rem;
+}
+
+
+/* =========================================================
+   09. INVOICE TABLE
+========================================================= */
+
+.m6-invoice-table th {
+    background: #faf6f3;
+}
+
+.m6-align-right {
+    text-align: right !important;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.m6-method {
+    display: inline-flex;
+    padding: .25rem .5rem;
+    border-radius: .45rem;
+    background: #f7f2ee;
+    color: var(--brown);
+    font-size: .68rem;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   10. INVOICE TOTAL
+========================================================= */
+
+.m6-invoice-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem .9rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--brown);
+    font-weight: 600;
+}
+
+.m6-invoice-total strong {
+    font: 600 1.35rem var(--font-display);
+    white-space: nowrap;
+}
+
+.m6-invoice-status-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem .9rem 0;
+    font-size: .78rem;
+}
+
+
+/* =========================================================
+   11. PAYMENT SUMMARY CARD
+========================================================= */
+
+.m6-payment-aside {
+    display: grid;
+    gap: 1rem;
+    position: sticky;
+    top: 1rem;
+}
+
+.m6-balance-card {
+    display: grid;
+    gap: .75rem;
+    padding: 1.15rem;
+}
+
+.m6-balance-card > div:not(.m6-progress) {
+    display: flex;
+    justify-content: space-between;
+    gap: .8rem;
+    align-items: center;
+}
+
+.m6-balance-card small {
+    color: var(--muted);
+    font-size: .72rem;
+}
+
+.m6-balance-card strong {
+    color: var(--brown);
+    font-size: .82rem;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.m6-balance-card > div:first-of-type strong {
+    font: 600 1.2rem var(--font-display);
+}
+
+.m6-paid {
+    color: #55745a !important;
+}
+
+.m6-balance-due {
+    padding-top: .75rem;
+    border-top: 1px solid var(--line);
+}
+
+.m6-balance-due strong {
+    font: 600 1.15rem var(--font-display);
+}
+
+
+/* =========================================================
+   12. PAYMENT PROGRESS
+========================================================= */
+
+.m6-progress {
+    height: .48rem;
+    overflow: hidden;
+    border-radius: 99px;
+    background: #f0e9e4;
+}
+
+.m6-progress span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: #789276;
+    transition: width .3s ease;
+}
+
+.m6-progress-label {
+    text-align: right;
+}
+
+
+/* =========================================================
+   13. PAYMENT FORM
+========================================================= */
+
+.m6-payment-form .m5-panel-heading {
+    padding: 1rem 1.1rem;
+}
+
+.m6-form {
+    display: grid;
+    gap: .85rem;
+    padding: 1.1rem;
+}
+
+.m6-form .m5-field small {
+    color: var(--muted);
+    font-size: .68rem;
+}
+
+.m6-form-note {
+    margin: 0;
+    color: var(--muted);
+    font-size: .68rem;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   14. PAID STATE
+========================================================= */
+
+.m6-paid-state {
+    display: grid;
+    justify-items: center;
+    padding: 1.6rem;
+    text-align: center;
+}
+
+.m6-paid-state > span {
+    display: grid;
+    place-items: center;
+    width: 2.7rem;
+    height: 2.7rem;
+    border-radius: 50%;
+    background: #e8f1e6;
+    color: #426647;
+    font-size: 1.3rem;
+}
+
+.m6-paid-state strong {
+    margin-top: .6rem;
+    color: var(--brown);
+    font: 600 1rem var(--font-display);
+}
+
+.m6-paid-state p {
+    margin: .25rem 0 0;
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+
+/* =========================================================
+   15. PAYMENT HISTORY
+========================================================= */
+
+.m6-delete-link {
+    border: 0;
+    padding: .25rem;
+    background: none;
+    color: #a34e47;
+    font: 600 .75rem var(--font-body);
+    cursor: pointer;
+    transition: color .2s;
+}
+
+.m6-delete-link:hover {
+    color: #77342e;
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   16. APPOINTMENT INVOICE INTEGRATION
+========================================================= */
+
+.m6-appointment-invoice {
+    display: grid;
+    gap: .65rem;
+    padding: 1.1rem;
+}
+
+.m6-appointment-invoice h3 {
+    margin: 0;
+    color: var(--brown);
+    font: 600 1.08rem var(--font-display);
+}
+
+.m6-appointment-invoice > p {
+    margin: 0;
+    color: var(--muted);
+    font-size: .78rem;
+    line-height: 1.6;
+}
+
+.m6-appointment-balance {
+    display: grid;
+    justify-items: start;
+    gap: .35rem;
+    padding: .85rem;
+    border-radius: .8rem;
+    background: #faf6f2;
+}
+
+.m6-appointment-balance strong {
+    color: var(--brown);
+    font: 600 1.25rem var(--font-display);
+    font-variant-numeric: tabular-nums;
+}
+
+.m6-appointment-balance small {
+    color: var(--muted);
+    font-size: .68rem;
+}
+
+.m6-invoice-mini-info {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .15rem;
+    padding: .65rem 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+.m6-invoice-mini-info span {
+    color: var(--muted);
+    font-size: .68rem;
+}
+
+.m6-invoice-mini-info strong {
+    margin-bottom: .45rem;
+    color: var(--brown);
+    font-size: .8rem;
+    overflow-wrap: anywhere;
+}
+
+.m6-invoice-mini-info strong:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   17. RESPONSIVE — TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .m6-invoice-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .m6-payment-aside {
+        position: static;
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
+
+
+/* =========================================================
+   18. RESPONSIVE — MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .m6-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .m6-heading > .m5-button,
+    .m6-heading form,
+    .m6-heading form button {
+        width: 100%;
+    }
+
+    .m6-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .m6-filter {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .m6-filter .m5-field {
+        width: 100%;
+    }
+
+    .m6-filter-actions {
+        display: flex;
+    }
+
+    .m6-reminder-row {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: .7rem;
+    }
+
+    .m6-reminder-main {
+        flex-basis: calc(100% - 3.7rem);
+    }
+
+    .m6-reminder-action {
+        width: 100%;
+        padding-left: 3.6rem;
+        justify-content: flex-start;
+    }
+
+    .m6-reminder-action .m5-button {
+        width: 100%;
+    }
+
+    .m6-invoice-paper {
+        padding: 1rem;
+    }
+
+    .m6-payment-aside {
+        grid-template-columns: 1fr;
+    }
+
+    .m6-invoice-number,
+    .m6-invoice-parties {
+        grid-template-columns: 1fr;
+    }
+
+    .m6-invoice-total strong {
+        font-size: 1.1rem;
+    }
+
+    .m6-invoice-status-line {
+        align-items: flex-start;
+    }
+
+}
+
+
+/* =========================================================
+   19. RESPONSIVE — SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .m6-heading h2 {
+        font-size: 1.4rem;
+    }
+
+    .m6-invoice-brand {
+        gap: .5rem;
+    }
+
+    .m6-invoice-tag {
+        font-size: .8rem;
+    }
+
+    .m6-brand-mark {
+        width: 2.4rem;
+        height: 2.4rem;
+    }
+
+    .m6-reminder-meta {
+        flex-direction: column;
+        gap: .25rem;
+    }
+
+}

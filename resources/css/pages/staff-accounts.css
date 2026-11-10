@@ -1,0 +1,183 @@
+/* ========================================
+   HALAMAN KELOLA AKUN STAF
+======================================== */
+
+.account-form {
+    max-width: 36rem;
+}
+
+.account-name {
+    font-weight: 600;
+}
+
+.account-self {
+    color: var(--muted);
+    font-size: .875rem;
+}
+
+/* ========================================
+   HALAMAN PROFIL SAYA
+======================================== */
+
+.profile-stack {
+    display: grid;
+
+    /* Membuat dua card sejajar */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 1.5rem;
+
+    /* Memperluas area agar cukup untuk dua card */
+    width: 100%;
+    max-width: 56rem;
+
+    /* Menjaga tinggi card mengikuti kontennya */
+    align-items: start;
+}
+
+/* Mencegah isi card melebar keluar kolom */
+.profile-stack > * {
+    min-width: 0;
+}
+
+.profile-who {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.profile-who__name {
+    font: 600 1.25rem/1.3 var(--font-display);
+    margin: 0;
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+/* Tablet dan layar lebih kecil */
+@media (max-width: 900px) {
+    .profile-stack {
+        grid-template-columns: 1fr;
+        max-width: 40rem;
+    }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .profile-stack {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* Penyesuaian komponen akun staf */
+.account-form {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.account-form form {
+    display: grid;
+    gap: 1rem;
+}
+
+.account-form .form-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-top: .5rem;
+}
+
+.account-self {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: .25rem .625rem;
+    border-radius: 999px;
+    background: rgba(202, 198, 174, .28);
+}
+
+.table-host,
+.table-wrap,
+.table-scroll {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.table-scroll {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+}
+
+.table__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.profile-stack {
+    box-sizing: border-box;
+}
+
+.profile-who__name {
+    color: var(--brown);
+}
+
+@media (max-width: 760px) {
+    .account-form {
+        max-width: 100%;
+    }
+
+    .account-form .form-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .account-form .form-actions > * {
+        width: 100%;
+    }
+
+    .table__actions {
+        justify-content: flex-start;
+    }
+}
+
+/* Penyempurnaan halaman akun staf M1 */
+.page-intro-row { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin:.25rem 0 1.25rem; }
+.content-title { margin:.2rem 0 .25rem; color:var(--brown); font:600 clamp(1.55rem,1.25rem + .8vw,2rem)/1.2 var(--font-display); }
+.content-lead { margin:0; color:var(--muted); font-size:.875rem; line-height:1.55; }
+.account-list-card, .account-form-card { min-width:0; }
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; min-height:2.55rem; padding:.55rem 1rem; border:1px solid var(--brown); border-radius:.75rem; color:var(--pink); background:var(--brown); font:600 .85rem/1.3 var(--font-body); text-decoration:none; cursor:pointer; transition:background .15s ease, transform .15s ease; }
+.btn:hover { background:#3e2e28; transform:translateY(-1px); }
+.btn .icon { width:1rem; height:1rem; }
+.btn--soft { color:var(--brown); background:rgba(202,198,174,.32); border-color:rgba(83,62,54,.16); }
+.btn--soft:hover { background:rgba(202,198,174,.55); }
+.btn--small { min-height:2rem; padding:.35rem .65rem; font-size:.73rem; }
+.btn--danger-outline { color:#9d3428; background:transparent; border-color:rgba(179,38,30,.35); }
+.btn--danger-outline:hover { color:#fff; background:#9d3428; }
+.data-table { width:100%; border-collapse:collapse; text-align:left; font-size:.85rem; }
+.data-table th { padding:.8rem .75rem; color:var(--muted); background:rgba(202,198,174,.22); font-size:.72rem; font-weight:700; white-space:nowrap; }
+.data-table td { padding:.85rem .75rem; border-bottom:1px solid var(--line); vertical-align:middle; }
+.data-table tbody tr:last-child td { border-bottom:0; }
+.data-table td strong, .data-table td small { display:block; }
+.data-table td small { margin-top:.18rem; color:var(--muted); font-size:.75rem; }
+.text-right { text-align:right; }
+.table-actions { display:flex; justify-content:flex-end; align-items:center; gap:.45rem; flex-wrap:wrap; }
+.table-actions form { margin:0; }
+.status-pill--active { color:#426333; background:#e7efd9; }
+.status-pill--inactive { color:#8a4338; background:#fce1dc; }
+.pagination-wrap { margin-top:1rem; }
+.empty-state { display:grid; justify-items:center; gap:.5rem; padding:2.5rem 1rem; text-align:center; }
+.empty-state img { width:4.5rem; height:4.5rem; object-fit:contain; }
+.empty-state h3 { margin:0; color:var(--brown); font:600 1.2rem/1.3 var(--font-display); }
+.empty-state p { max-width:25rem; margin:0 0 .5rem; color:var(--muted); font-size:.85rem; }
+.form-alert { margin:0 0 1rem; padding:.8rem 1rem; color:#7d1a14; background:#fcebe8; border:1px solid #f1c3bd; border-radius:var(--radius-inner); font-size:.85rem; }
+.form-alert ul { margin:.35rem 0 0; padding-left:1.2rem; }
+.account-form-card { max-width:52rem; }
+.account-form-card .profile-form { max-width:100%; }
+@media (max-width:760px) { .page-intro-row { align-items:flex-start; } .page-intro-row > .btn { width:100%; } .table-actions { justify-content:flex-start; } .data-table { min-width:44rem; } }

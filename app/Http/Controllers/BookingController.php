@@ -50,6 +50,50 @@ class BookingController extends Controller
         ]);
     }
 
+    public function cariPelangganPublik(
+    Request $request,
+    PhoneNormalizer $phoneNormalizer
+): JsonResponse {
+    $data = $request->validate([
+        'q' => ['required', 'string', 'max:30'],
+    ]);
+
+    try {
+        $nomor = $phoneNormalizer->normalize($data['q']);
+    } catch (InvalidArgumentException) {
+        return response()->json(['data' => []]);
+    }
+
+    $customer = Customer::query()
+        ->where('no_wa', $nomor)
+        ->first();
+
+    if (! $customer) {
+        return response()->json(['data' => []]);
+    }
+
+    return response()->json([
+        'data' => [[
+            'id' => $customer->id,
+            'nama' => $customer->nama,
+            'no_wa' => $customer->no_wa,
+            'pets' => $customer->pets()
+    ->select([
+        'id',
+        'customer_id',
+        'nama',
+        'spesies',
+        'ras',
+        'ukuran',
+        'jenis_bulu',
+        'perilaku',
+    ])
+    ->orderBy('nama')
+    ->get(),
+        ]],
+    ]);
+}
+
     public function konfirmasi(
         Request $request,
         BookingService $bookingService

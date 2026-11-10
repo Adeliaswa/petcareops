@@ -1,0 +1,33 @@
+/* Tombol admin. Varian: (utama) .v-secondary .v-danger .v-success
+   Modifier: .is-outline .is-pill .is-sm .is-icon .btn--block .btn--lg */
+.btn {
+    --c: #533E36; --on: #FFC5BE; --hover: #3E2E28; --line: #533E36; --ink: #533E36; --soft: rgba(255, 197, 190, .4);
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    height: 2.5rem; padding: 0 1rem;
+    font: 600 .9375rem/1.4 var(--font-body); white-space: nowrap; text-decoration: none;
+    color: var(--on); background: var(--c); border: 1.5px solid var(--c); border-radius: .5rem; cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+}
+.btn svg { width: 1.125rem; height: 1.125rem; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.v-secondary { --c: #FFC5BE; --on: #533E36; --hover: #FFB0A6; --line: #C5ADAB; --ink: #533E36; --soft: rgba(202, 198, 174, .3); }
+.v-danger    { --c: #B3402F; --on: #fff; --hover: #963223; --line: #B3402F; --ink: #A33727; --soft: rgba(179, 64, 47, .09); }
+.v-success   { --c: #5C7A4E; --on: #fff; --hover: #4A6540; --line: #5C7A4E; --ink: #4A6540; --soft: rgba(92, 122, 78, .12); }
+
+.btn:hover { background: var(--hover); border-color: var(--hover); }
+.btn.is-outline { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.is-outline:hover { background: var(--soft); border-color: var(--ink); }
+.btn:focus-visible { outline: none; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--brown); }
+
+.btn.is-pill { border-radius: 999px; padding: 0 1.25rem; }
+.btn.is-sm { height: 2rem; padding: 0 .75rem; gap: .375rem; font-size: .8125rem; border-radius: .375rem; }
+.btn.is-sm.is-pill { border-radius: 999px; padding: 0 1rem; }
+.btn.is-sm svg { width: 1rem; height: 1rem; }
+.btn.is-icon { width: 2.5rem; padding: 0; }
+.btn.is-icon.is-sm { width: 2rem; }
+
+.btn:disabled, .btn:disabled:hover { background: rgba(202, 198, 174, .4); border-color: transparent; color: rgba(83, 62, 54, .5); cursor: not-allowed; }
+.btn.is-outline:disabled, .btn.is-outline:disabled:hover { background: transparent; border-color: rgba(202, 198, 174, .9); color: rgba(83, 62, 54, .45); }
+
+.btn--block { width: 100%; }
+.btn--lg { height: 3rem; padding: 0 1.25rem; font-size: 1rem; border-radius: var(--radius-inner); }

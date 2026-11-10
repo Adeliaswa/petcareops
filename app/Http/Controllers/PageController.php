@@ -14,9 +14,41 @@ use Illuminate\Http\Request;
 class PageController extends Controller
 {
     public function dashboard()
-    {
-        return view('dashboard');
-    }
+{
+    $todayAppointments = Appointment::query()
+        ->with([
+            'pet.customer',
+            'groomer.user',
+            'services',
+        ])
+        ->whereDate('mulai', today()->toDateString())
+        ->where('status', '!=', 'dibatalkan')
+        ->orderBy('mulai')
+        ->get();
+
+    $stats = [
+        'appointments_today' => $todayAppointments->count(),
+
+        'waiting_appointments' => Appointment::query()
+            ->where('status', 'menunggu')
+            ->count(),
+
+        'customers' => Customer::query()->count(),
+
+        'pets' => Pet::query()->count(),
+
+        'active_groomers' => Groomer::query()
+            ->whereHas('user', function ($query) {
+                $query->where('is_active', true);
+            })
+            ->count(),
+    ];
+
+    return view('dashboard', compact(
+        'stats',
+        'todayAppointments'
+    ));
+}
 
     public function adminServices()
     {
@@ -88,53 +120,74 @@ class PageController extends Controller
     }
 
     public function staffAppointments(Request $request)
-    {
-        $search = trim($request->input('search', ''));
-        $status = $request->input('status');
-        $tanggal = $request->input('tanggal');
+{
+    $filters = [
+        'search' => trim($request->input('search', '')),
+        'status' => $request->input('status', ''),
+        'groomer_id' => $request->input('groomer_id', ''),
+        'tanggal' => $request->input('tanggal', ''),
+    ];
 
-        $appointments = Appointment::query()
-            ->with([
-                'pet.customer',
-                'groomer.user',
-                'services',
-                'invoice.payments',
-            ])
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($query) use ($search) {
-                    $query->whereHas('pet', function ($petQuery) use ($search) {
-                        $petQuery->where('nama', 'ilike', "%{$search}%")
-                            ->orWhereHas('customer', function ($customerQuery) use ($search) {
-                                $customerQuery->where('nama', 'ilike', "%{$search}%");
-                            });
-                    });
+    $groomers = Groomer::query()
+        ->with('user:id,name')
+        ->orderBy('id')
+        ->get();
+
+    $appointments = Appointment::query()
+        ->with([
+            'pet.customer',
+            'groomer.user',
+            'services',
+            'invoice.payments',
+        ])
+        ->when($filters['search'] !== '', function ($query) use ($filters) {
+            $search = $filters['search'];
+
+            $query->where(function ($query) use ($search) {
+                $query->whereHas('pet', function ($petQuery) use ($search) {
+                    $petQuery->where('nama', 'ilike', "%{$search}%")
+                        ->orWhereHas('customer', function ($customerQuery) use ($search) {
+                            $customerQuery->where('nama', 'ilike', "%{$search}%");
+                        });
                 });
-            })
-            ->when(
-                in_array($status, [
-                    'menunggu',
-                    'dikerjakan',
-                    'selesai',
-                    'dijemput',
-                    'dibatalkan',
-                ], true),
-                fn ($query) => $query->where('status', $status)
+            });
+        })
+        ->when(
+            in_array($filters['status'], [
+                'menunggu',
+                'dikerjakan',
+                'selesai',
+                'dijemput',
+                'dibatalkan',
+            ], true),
+            fn ($query) => $query->where('status', $filters['status'])
+        )
+        ->when(
+            $filters['groomer_id'] !== ''
+                && ctype_digit((string) $filters['groomer_id']),
+            fn ($query) => $query->where(
+                'groomer_id',
+                $filters['groomer_id']
             )
-            ->when(
-                $tanggal && strtotime($tanggal),
-                fn ($query) => $query->whereDate('mulai', $tanggal)
+        )
+        ->when(
+            $filters['tanggal'] !== ''
+                && strtotime($filters['tanggal']),
+            fn ($query) => $query->whereDate(
+                'mulai',
+                $filters['tanggal']
             )
-            ->latest('mulai')
-            ->paginate(15)
-            ->withQueryString();
+        )
+        ->latest('mulai')
+        ->paginate(15)
+        ->withQueryString();
 
-        return view('staff.appointments.index', compact(
-            'appointments',
-            'search',
-            'status',
-            'tanggal'
-        ));
-    }
+    return view('staff.appointments.index', compact(
+        'appointments',
+        'groomers',
+        'filters'
+    ));
+}
 
     public function staffAppointmentDetail(Appointment $appointment)
     {
@@ -272,6 +325,22 @@ class PageController extends Controller
             'groomingRecords'
         ));
     }
+
+    public function publicHome()
+{
+    $services = Service::query()
+        ->where('aktif', true)
+        ->orderBy('nama')
+        ->get([
+            'id',
+            'nama',
+            'deskripsi',
+            'durasi_dasar',
+            'harga',
+        ]);
+
+    return view('public.home', compact('services'));
+}
 
     public function publicBooking()
     {

@@ -4,10 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+use Illuminate\View\View;
 
 class BookingStatusController extends Controller
 {
-    public function show(string $token): JsonResponse
+    /**
+     * Menampilkan halaman status booking publik.
+     */
+    public function show(string $token): View|Response
+    {
+        return response()
+            ->view('booking.status', compact('token'))
+            ->header('X-Robots-Tag', 'noindex, nofollow');
+    }
+
+    /**
+     * Mengambil data status booking dalam format JSON.
+     */
+    public function data(string $token): JsonResponse
     {
         $appointment = Appointment::query()
             ->with([
@@ -28,18 +43,19 @@ class BookingStatusController extends Controller
         return response()
             ->json([
                 'booking' => [
-                    'pet' => $appointment->pet->nama,
+                    'pet' => $appointment->pet?->nama ?? '-',
                     'layanan' => $appointment->services->map(
                         fn ($service) => [
                             'nama' => $service->nama_layanan,
                             'harga' => $service->harga,
                         ]
                     )->values(),
-                    'mulai' => $appointment->mulai->format('Y-m-d H:i:s'),
+                    'mulai' => $appointment->mulai?->format('Y-m-d H:i:s'),
                     'selesai_estimasi' => $appointment->selesai_estimasi
-                        ->format('Y-m-d H:i:s'),
-                    'durasi_estimasi' => $appointment->durasi_estimasi,
+                        ?->format('Y-m-d H:i:s'),
+                    'durasi_estimasi' => (int) $appointment->durasi_estimasi,
                     'status' => $appointment->status,
+                    'token' => $appointment->token,
                 ],
             ], 200)
             ->header('X-Robots-Tag', 'noindex, nofollow');

@@ -68,11 +68,22 @@ class BookingStatusTest extends TestCase
         return $appointment;
     }
 
+    public function test_valid_token_displays_booking_status_page(): void
+{
+    $appointment = $this->buatBooking();
+
+    $this->get('/status/'.$appointment->token)
+        ->assertOk()
+        ->assertViewIs('booking.status')
+        ->assertViewHas('token', $appointment->token)
+        ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+}
+
     public function test_valid_token_displays_booking_status(): void
     {
         $appointment = $this->buatBooking();
 
-        $response = $this->getJson('/status/'.$appointment->token);
+        $response = $this->getJson('/status/'.$appointment->token.'/data');
 
         $response
             ->assertOk()
@@ -84,7 +95,7 @@ class BookingStatusTest extends TestCase
 
     public function test_invalid_token_returns_same_not_found_response(): void
     {
-        $response = $this->getJson('/status/'.str_repeat('X', 64));
+        $response = $this->getJson('/status/'.str_repeat('X', 64).'/data');
 
         $response
             ->assertNotFound()
@@ -95,7 +106,7 @@ class BookingStatusTest extends TestCase
 
     public function test_short_token_also_returns_not_found(): void
     {
-        $response = $this->getJson('/status/abc');
+        $response = $this->getJson('/status/abc/data');
 
         $response
             ->assertNotFound()
@@ -108,7 +119,7 @@ class BookingStatusTest extends TestCase
     {
         $appointment = $this->buatBooking();
 
-        $response = $this->getJson('/status/'.$appointment->token);
+        $response = $this->getJson('/status/'.$appointment->token.'/data');
 
         $response->assertOk();
 
@@ -198,7 +209,7 @@ class BookingStatusTest extends TestCase
         foreach (['dikerjakan', 'selesai', 'dijemput', 'dibatalkan'] as $status) {
             $appointment->update(['status' => $status]);
 
-            $this->getJson('/status/'.$appointment->token)
+            $this->getJson('/status/'.$appointment->token.'/data')
                 ->assertOk()
                 ->assertJsonPath('booking.status', $status);
         }
@@ -210,7 +221,7 @@ class BookingStatusTest extends TestCase
 
         $appointment->update(['status' => 'dibatalkan']);
 
-        $this->getJson('/status/'.$appointment->token)
+        $this->getJson('/status/'.$appointment->token.'/data')
             ->assertOk()
             ->assertJsonPath('booking.status', 'dibatalkan');
     }
@@ -220,11 +231,11 @@ class BookingStatusTest extends TestCase
         $appointment = $this->buatBooking();
 
         for ($i = 0; $i < 30; $i++) {
-            $this->getJson('/status/'.$appointment->token)
+            $this->getJson('/status/'.$appointment->token.'/data')
                 ->assertOk();
         }
 
-        $this->getJson('/status/'.$appointment->token)
+        $this->getJson('/status/'.$appointment->token.'/data')
             ->assertStatus(429);
     }
 }

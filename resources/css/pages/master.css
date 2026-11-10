@@ -1,0 +1,81 @@
+
+/* Bilah atas daftar: pencarian dan jumlah data */
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: .75rem 1rem; flex-wrap: wrap; margin: 0 0 1rem; }
+.toolbar__search { flex: 1 1 18rem; max-width: 28rem; }
+.toolbar__search .form-input { background: #fff; border-color: var(--rose); }
+.toolbar__search .form-input:focus { border-color: var(--brown); }
+.toolbar__count { margin: 0; font-size: .875rem; color: var(--muted); }
+
+/* Memuat */
+.list-state { display: flex; align-items: center; justify-content: center; gap: .75rem; padding: 3rem 1rem; color: var(--muted); font-size: .9375rem; }
+.spinner { width: 1.25rem; height: 1.25rem; border-radius: 50%; border: 2.5px solid rgba(83, 62, 54, .18); border-top-color: var(--brown); animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
+
+/* Navigasi halaman */
+.pager { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.25rem; font-size: .875rem; color: var(--muted); }
+
+/* Tautan dalam tabel dan teks bantu sel */
+.link { color: var(--brown); font-weight: 600; text-decoration: underline; text-decoration-color: var(--pink); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.link:hover { text-decoration-color: var(--brown); }
+.cell-sub { display: block; margin-top: .125rem; font-size: .8125rem; font-weight: 400; color: var(--muted); }
+.table td.clip { max-width: 18rem; overflow-wrap: anywhere; }
+
+/* Kembali ke daftar */
+.back-link { display: inline-flex; align-items: center; gap: .375rem; margin: 0 0 1rem; color: var(--muted); font-size: .875rem; font-weight: 600; text-decoration: none; }
+.back-link:hover { color: var(--brown); }
+.back-link .icon { width: 1rem; height: 1rem; }
+
+/* Detail satu data */
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1rem 1.5rem; margin: 0; }
+.detail-grid dt { margin: 0 0 .125rem; font-size: .8125rem; font-weight: 600; color: var(--muted); }
+.detail-grid dd { margin: 0; font-size: .9375rem; font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
+.detail-grid__wide { grid-column: 1 / -1; }
+.detail-stack { display: grid; gap: 1.5rem; }
+.card__head-row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; margin: 0 0 1rem; }
+.card__head-row .card__title { margin: 0; }
+
+/* Dua kolom di form, satu kolom di HP */
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+@media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
+
+/* Pemilih pemilik di form hewan */
+.owner-chip { display: flex; align-items: center; justify-content: space-between; gap: .75rem; background: rgba(255, 197, 190, .35); border: 1.5px solid var(--rose); border-radius: var(--radius-inner); padding: .5rem .5rem .5rem 1rem; }
+.owner-chip__name { font-weight: 600; overflow-wrap: anywhere; }
+.owner-search { position: relative; }
+.owner-results { position: absolute; z-index: 5; left: 0; right: 0; top: calc(100% + .375rem); margin: 0; padding: .375rem; list-style: none; max-height: 14rem; overflow-y: auto; background: #fff; border: 1px solid rgba(83, 62, 54, .16); border-radius: 1rem; box-shadow: 0 14px 34px rgba(83, 62, 54, .2); }
+.owner-results__item { width: 100%; display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; padding: .55rem .75rem; background: transparent; border: 0; border-radius: .75rem; text-align: left; font: 500 .9375rem/1.4 var(--font-body); color: var(--brown); cursor: pointer; }
+.owner-results__item:hover, .owner-results__item:focus-visible { background: #fff1ef; outline: none; }
+.owner-results__item small { color: var(--muted); font-size: .8125rem; font-variant-numeric: tabular-nums; }
+.owner-results__empty { padding: .75rem; font-size: .875rem; color: var(--muted); }
+
+/* Faktor durasi: rumus */
+.formula { display: flex; align-items: flex-start; gap: .875rem; }
+.formula__text { margin: 0; font-size: .9375rem; line-height: 1.6; }
+.formula__text code { display: inline-block; margin-top: .375rem; padding: .25rem .625rem; background: rgba(202, 198, 174, .35); border-radius: .5rem; font: 600 .875rem/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+.factor-group { margin-top: 1.5rem; }
+.factor-group__head { margin: 0 0 .625rem; }
+.factor-group__title { margin: 0; font: 600 1.125rem/1.3 var(--font-display); }
+.factor-group__hint { margin: .125rem 0 0; font-size: .875rem; color: var(--muted); }
+.key-code { display: inline-block; padding: .0625rem .5rem; background: rgba(202, 198, 174, .35); border-radius: .375rem; font: 600 .8125rem/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+/* Shift mingguan groomer */
+.week { display: grid; }
+.week__row { display: grid; grid-template-columns: 6rem 1fr auto; align-items: center; gap: .5rem .75rem; padding: .75rem 0; border-bottom: 1px solid var(--line); }
+.week__row:first-child { padding-top: 0; }
+.week__row:last-child { border-bottom: 0; padding-bottom: 0; }
+.week__day { font-weight: 600; }
+.week__slots { display: flex; flex-wrap: wrap; gap: .5rem; }
+.week__off { color: var(--muted); font-size: .875rem; }
+.shift-chip { display: inline-flex; align-items: center; gap: .125rem; padding: .125rem .25rem .125rem .75rem; background: rgba(255, 197, 190, .4); border: 1px solid rgba(197, 173, 171, .8); border-radius: 999px; font-size: .8125rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.chip-btn { width: 1.75rem; height: 1.75rem; display: grid; place-items: center; background: transparent; border: 0; border-radius: 50%; color: var(--brown); cursor: pointer; }
+.chip-btn:hover { background: rgba(83, 62, 54, .12); }
+.chip-btn .icon { width: .9375rem; height: .9375rem; }
+@media (max-width: 560px) {
+    .week__row { grid-template-columns: 1fr auto; }
+    .week__slots { grid-column: 1 / -1; order: 3; }
+}
+
+/* Daftar di dalam kartu: kartu keadaan kosong tidak diberi bingkai ganda */
+.card .card { border: 0; box-shadow: none; padding: 0; background: transparent; }
+.master-page{display:grid;gap:1.25rem;color:var(--ink)}.master-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem}.master-heading h1{margin:.15rem 0;color:var(--brown);font:600 var(--fs-h2)/1.2 var(--font-display)}.master-heading p:last-child{margin:.35rem 0 0;color:var(--muted);font-size:var(--fs-small)}.master-eyebrow{margin:0;color:var(--muted);font-size:.68rem;font-weight:700;letter-spacing:.13em}.master-toolbar{display:flex;align-items:center;justify-content:space-between;gap:1rem}.master-search{display:flex;align-items:center;gap:.65rem;width:min(100%,25rem);padding:.7rem .9rem;border:1px solid var(--line);border-radius:var(--radius-inner);background:#fff;color:var(--muted)}.master-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);font:inherit}.master-count{color:var(--muted);font-size:.8rem;white-space:nowrap}.master-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:var(--radius-card);background:#fff;box-shadow:var(--shadow-sm)}.master-table{width:100%;border-collapse:collapse;min-width:38rem}.master-table th,.master-table td{padding:.9rem 1rem;text-align:left;border-bottom:1px solid var(--line);font-size:.85rem;vertical-align:middle}.master-table th{background:rgba(202,198,174,.2);color:var(--brown);font-size:.75rem;font-weight:700;white-space:nowrap}.master-table tbody tr:last-child td{border-bottom:0}.master-table tbody tr:hover{background:var(--row-hover)}.master-action-head{text-align:right!important}.master-actions{display:flex;justify-content:flex-end;gap:.35rem}.master-icon-btn{display:inline-grid;place-items:center;width:2.15rem;height:2.15rem;border:1px solid var(--line);border-radius:.65rem;background:#fff;color:var(--brown);text-decoration:none;cursor:pointer}.master-icon-btn .icon{width:1rem;height:1rem}.master-icon-btn:hover{background:var(--field)}.master-icon-btn--danger{color:var(--error)}.master-state{text-align:center!important;padding:2.5rem 1rem!important;color:var(--muted)}.master-state strong,.master-state span{display:block}.master-state span{margin-top:.35rem;font-size:.8rem}.master-badge{display:inline-flex;padding:.3rem .65rem;border-radius:999px;font-size:.72rem;font-weight:700}.master-badge.is-active{background:rgba(100,134,106,.14);color:#496b4d}.master-badge.is-inactive{background:rgba(179,38,30,.1);color:var(--error)}.master-pagination{display:flex;align-items:center;justify-content:flex-end;gap:.85rem;color:var(--muted);font-size:.8rem}.master-pagination button:disabled{opacity:.45;cursor:not-allowed}.master-notice{padding:.8rem 1rem;border-radius:var(--radius-inner);font-size:.85rem}.master-notice.success{background:rgba(100,134,106,.12);color:#496b4d}.master-notice.error{background:rgba(179,38,30,.1);color:var(--error)}.master-modal-backdrop{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:1rem;background:rgba(30,22,19,.48)}.master-modal{width:min(100%,38rem);max-height:min(90dvh,48rem);overflow:auto;padding:1.4rem;background:#fff;border:1px solid var(--line);border-radius:1.4rem;box-shadow:var(--shadow-lg)}.master-modal>header{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1.2rem}.master-modal h2{margin:.2rem 0;color:var(--brown);font:600 1.5rem/1.2 var(--font-display)}.master-close{width:2.2rem;height:2.2rem;border:0;border-radius:50%;background:var(--field);color:var(--brown);font-size:1.5rem;cursor:pointer}.master-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.master-field{display:grid;gap:.4rem;color:var(--brown);font-size:.8rem;font-weight:600}.master-field--wide{grid-column:1/-1}.master-field input,.master-field select,.master-field textarea{width:100%;min-width:0;padding:.7rem .8rem;border:1px solid var(--line);border-radius:.7rem;background:#fff;color:var(--ink);font:400 .9rem var(--font-body)}.master-field input[type=checkbox]{width:1.1rem;height:1.1rem;accent-color:var(--brown)}.master-field small,.master-form-error{color:var(--error);font-size:.75rem}.master-modal form>footer{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.3rem;padding-top:1rem;border-top:1px solid var(--line)}[x-cloak]{display:none!important}@media(max-width:640px){.master-heading{align-items:stretch;flex-direction:column}.master-heading>.btn{align-self:flex-start}.master-toolbar{align-items:stretch;flex-direction:column}.master-search{width:100%}.master-pagination{justify-content:space-between}.master-form-grid{grid-template-columns:1fr}.master-field--wide{grid-column:auto}.master-modal{padding:1rem}.master-table{min-width:34rem}}

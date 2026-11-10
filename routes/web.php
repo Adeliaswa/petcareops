@@ -18,9 +18,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\InvoiceController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PageController::class, 'publicHome'])
+    ->name('home');
 
 // Halaman booking publik
 Route::get('/booking', [PageController::class, 'publicBooking'])
@@ -50,15 +49,27 @@ Route::prefix('booking')
             BookingController::class,
             'konfirmasi',
         ])->name('konfirmasi');
+
+        Route::get('/pelanggan', [
+    BookingController::class,
+    'cariPelangganPublik',
+])->name('pelanggan');
     });
 
 // Status booking publik (JSON)
+// Halaman status booking publik
 Route::get('/status/{token}', [
     BookingStatusController::class,
     'show',
-])
-    ->middleware('throttle:30,1')
+])->middleware('throttle:30,1')
     ->name('booking.status');
+
+// Data status booking dalam format JSON
+Route::get('/status/{token}/data', [
+    BookingStatusController::class,
+    'data',
+])->middleware('throttle:30,1')
+    ->name('booking.status.data');
 
 Route::middleware(['auth', 'active'])->group(function () {
 

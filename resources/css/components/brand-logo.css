@@ -1,0 +1,4 @@
+/* Logo resmi Pet Care Ops — komponen lintas layout. */
+.brand-logo { display: block; flex: none; height: auto; object-fit: contain; }
+.brand-logo--sidebar { width: min(100%, 8.25rem); }
+.brand-logo--groomer { width: 5.5rem; max-height: 3.25rem; }
