@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Appointment extends Model
 {
@@ -20,6 +21,9 @@ class Appointment extends Model
         'sumber',
         'catatan_pelanggan',
         'idempotency_key',
+        'alasan_batal',
+        'waktu_mulai_aktual',
+        'waktu_selesai_aktual',
     ];
 
     protected function casts(): array
@@ -29,6 +33,9 @@ class Appointment extends Model
             'selesai_estimasi' => 'datetime',
             'durasi_estimasi' => 'integer',
             'rincian_estimasi' => 'array',
+            'alasan_batal' => 'string',
+            'waktu_mulai_aktual' => 'datetime',
+            'waktu_selesai_aktual' => 'datetime',
         ];
     }
 
@@ -45,5 +52,10 @@ class Appointment extends Model
     public function services(): HasMany
     {
         return $this->hasMany(AppointmentService::class);
+    }
+
+    public function groomingRecord(): HasOne
+    {
+        return $this->hasOne(GroomingRecord::class);
     }
 }

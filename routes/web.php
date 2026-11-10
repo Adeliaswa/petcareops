@@ -1,3 +1,4 @@
+
 <?php
 
 use App\Http\Controllers\Admin\DurationFactorController;
@@ -6,6 +7,9 @@ use App\Http\Controllers\Admin\GroomerShiftController;
 use App\Http\Controllers\Admin\GroomerTimeOffController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\StaffAccountController;
+
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\AppointmentStatusController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingEstimationController;
 use App\Http\Controllers\BookingStatusController;
@@ -13,9 +17,16 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AppointmentController;
 
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC ROUTES
+|--------------------------------------------------------------------------
+*/
+
+// Halaman utama
 Route::get('/', function () {
     if (! auth()->check()) {
         return app(PageController::class)->publicHome();
@@ -38,15 +49,20 @@ Route::get('/', function () {
     abort(403, 'Akun tidak memiliki role yang sesuai.');
 })->name('home');
 
-// Halaman booking publik
-Route::get('/booking', [PageController::class, 'publicBooking'])
-    ->name('booking.create');
+
+// Booking publik
+Route::get('/booking', [
+    PageController::class,
+    'publicBooking',
+])->name('booking.create');
+
 
 // Proses booking publik
 Route::prefix('booking')
     ->name('booking.')
     ->middleware('throttle:30,1')
     ->group(function () {
+
         Route::post('/identifikasi', [
             BookingController::class,
             'identifikasi',
@@ -73,27 +89,52 @@ Route::prefix('booking')
         ])->name('konfirmasi');
     });
 
-// Halaman status booking dan endpoint data status (tanpa login).
+
+// Status booking publik
 Route::get('/status/{token}', [
     BookingStatusController::class,
     'show',
-])->middleware('throttle:30,1')->name('booking.status');
+])->middleware('throttle:30,1')
+    ->name('booking.status');
 
 Route::get('/status/{token}/data', [
     BookingStatusController::class,
     'data',
-])->middleware('throttle:30,1')->name('booking.status.data');
+])->middleware('throttle:30,1')
+    ->name('booking.status.data');
+
+
+/*
+|--------------------------------------------------------------------------
+| AUTHENTICATED ROUTES
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware(['auth', 'active'])->group(function () {
 
-    // Profil untuk semua staf
-    Route::get('/profil', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
+    /*
+    |--------------------------------------------------------------------------
+    | PROFILE
+    |--------------------------------------------------------------------------
+    */
 
-    Route::patch('/profil', [ProfileController::class, 'update'])
-        ->name('profile.update');
+    Route::get('/profil', [
+        ProfileController::class,
+        'edit',
+    ])->name('profile.edit');
 
-    // Halaman khusus admin
+    Route::patch('/profil', [
+        ProfileController::class,
+        'update',
+    ])->name('profile.update');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN ROUTES
+    |--------------------------------------------------------------------------
+    */
+
     Route::prefix('admin')
         ->name('admin.')
         ->middleware('role:admin')
@@ -104,6 +145,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                 PageController::class,
                 'dashboard',
             ])->name('dashboard');
+
 
             // Pengelolaan akun staf
             Route::get('/staff', [
@@ -136,120 +178,139 @@ Route::middleware(['auth', 'active'])->group(function () {
                 'resetPassword',
             ])->name('staff.reset-password');
 
+
             // Halaman Blade admin
-            Route::prefix('halaman')->name('pages.')->group(function () {
-                Route::get('/layanan', [
-                    PageController::class,
-                    'adminServices',
-                ])->name('services');
+            Route::prefix('halaman')
+                ->name('pages.')
+                ->group(function () {
 
-                Route::get('/faktor-durasi', [
-                    PageController::class,
-                    'adminDurationFactors',
-                ])->name('duration-factors');
+                    Route::get('/layanan', [
+                        PageController::class,
+                        'adminServices',
+                    ])->name('services');
 
-                Route::get('/groomer', [
-                    PageController::class,
-                    'adminGroomers',
-                ])->name('groomers');
+                    Route::get('/faktor-durasi', [
+                        PageController::class,
+                        'adminDurationFactors',
+                    ])->name('duration-factors');
 
-                Route::get('/groomer/{groomer}/shift', [
-                    PageController::class,
-                    'adminGroomerShifts',
-                ])->name('groomer-shifts');
+                    Route::get('/groomer', [
+                        PageController::class,
+                        'adminGroomers',
+                    ])->name('groomers');
 
-                Route::get('/groomer/{groomer}/libur', [
-                    PageController::class,
-                    'adminGroomerTimeOff',
-                ])->name('groomer-time-off');
+                    Route::get('/groomer/{groomer}/shift', [
+                        PageController::class,
+                        'adminGroomerShifts',
+                    ])->name('groomer-shifts');
 
-                Route::get('/libur', [
-                    PageController::class,
-                    'adminTimeOff',
-                ])->name('time-off');
-            });
+                    Route::get('/groomer/{groomer}/libur', [
+                        PageController::class,
+                        'adminGroomerTimeOff',
+                    ])->name('groomer-time-off');
 
-            // CRUD layanan grooming (JSON)
+                    Route::get('/libur', [
+                        PageController::class,
+                        'adminTimeOff',
+                    ])->name('time-off');
+                });
+
+
+            // CRUD layanan grooming
             Route::resource('layanan', ServiceController::class)
                 ->parameters(['layanan' => 'service'])
                 ->except(['create', 'edit']);
 
-            // CRUD faktor durasi (JSON)
+
+            // CRUD faktor durasi
             Route::resource('faktor-durasi', DurationFactorController::class)
                 ->parameters(['faktor-durasi' => 'factor'])
                 ->except(['create', 'edit']);
 
-            // Pengelolaan groomer (JSON)
-            Route::get('groomer', [GroomerController::class, 'index'])
-                ->name('groomer.index');
 
-            Route::get('groomer/{groomer}', [GroomerController::class, 'show'])
-                ->name('groomer.show');
+            // Pengelolaan groomer
+            Route::get('/groomer', [
+                GroomerController::class,
+                'index',
+            ])->name('groomer.index');
 
-            Route::put('groomer/{groomer}', [GroomerController::class, 'update'])
-                ->name('groomer.update');
+            Route::get('/groomer/{groomer}', [
+                GroomerController::class,
+                'show',
+            ])->name('groomer.show');
 
-            // Shift groomer (JSON)
-            Route::get('groomer/{groomer}/shift', [
+            Route::put('/groomer/{groomer}', [
+                GroomerController::class,
+                'update',
+            ])->name('groomer.update');
+
+
+            // Shift groomer
+            Route::get('/groomer/{groomer}/shift', [
                 GroomerShiftController::class,
                 'index',
             ])->name('groomer.shift.index');
 
-            Route::post('groomer/{groomer}/shift', [
+            Route::post('/groomer/{groomer}/shift', [
                 GroomerShiftController::class,
                 'store',
             ])->name('groomer.shift.store');
 
-            Route::put('groomer/{groomer}/shift/{shift}', [
+            Route::put('/groomer/{groomer}/shift/{shift}', [
                 GroomerShiftController::class,
                 'update',
             ])->name('groomer.shift.update');
 
-            Route::delete('groomer/{groomer}/shift/{shift}', [
+            Route::delete('/groomer/{groomer}/shift/{shift}', [
                 GroomerShiftController::class,
                 'destroy',
             ])->name('groomer.shift.destroy');
 
-            // Jadwal libur groomer (JSON)
-            Route::get('groomer/{groomer}/libur', [
+
+            // Jadwal libur groomer
+            Route::get('/groomer/{groomer}/libur', [
                 GroomerTimeOffController::class,
                 'index',
             ])->name('groomer.time-off.index');
 
-            Route::post('groomer/{groomer}/libur', [
+            Route::post('/groomer/{groomer}/libur', [
                 GroomerTimeOffController::class,
                 'store',
             ])->name('groomer.time-off.store');
 
-            Route::put('groomer/{groomer}/libur/{timeOff}', [
+            Route::put('/groomer/{groomer}/libur/{timeOff}', [
                 GroomerTimeOffController::class,
                 'update',
             ])->name('groomer.time-off.update');
 
-            Route::delete('groomer/{groomer}/libur/{timeOff}', [
+            Route::delete('/groomer/{groomer}/libur/{timeOff}', [
                 GroomerTimeOffController::class,
                 'destroy',
             ])->name('groomer.time-off.destroy');
 
-            Route::get('libur', [
+            Route::get('/libur', [
                 GroomerTimeOffController::class,
                 'indexAll',
             ])->name('libur.index');
         });
 
-    // Booking staf: admin dan resepsionis
+
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF BOOKING ROUTES
+    |--------------------------------------------------------------------------
+    */
+
     Route::prefix('staf/booking')
         ->name('staf.booking.')
         ->middleware('role:admin,resepsionis')
         ->group(function () {
 
-            // Halaman form booking staf
             Route::get('/', [
                 PageController::class,
                 'staffBooking',
             ])->name('create');
 
-            // Proses booking staf (JSON)
             Route::post('/estimasi', [
                 BookingEstimationController::class,
                 'estimasiStaf',
@@ -271,73 +332,138 @@ Route::middleware(['auth', 'active'])->group(function () {
             ])->name('pelanggan');
         });
 
-    // Halaman staf: admin dan resepsionis
+
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF OPERATION ROUTES (M4 + M5)
+    |--------------------------------------------------------------------------
+    */
+
     Route::prefix('staf')
         ->name('staf.')
         ->middleware('role:admin,resepsionis')
         ->group(function () {
 
-        // Halaman appointment resepsionis
-        Route::get('/appointments', [
-            AppointmentController::class,
-            'index',
-        ])->name('appointments.index');
+            // Daftar appointment
+            // Mempertahankan controller milikmu
+            Route::get('/appointments', [
+                AppointmentController::class,
+                'index',
+            ])->name('appointments.index');
 
-        // Perubahan status appointment
-        Route::patch('/appointments/{appointment}/status', [
-            AppointmentController::class,
-            'updateStatus',
-        ])->name('appointments.status');
 
-        // Pembatalan appointment
-        Route::patch('/appointments/{appointment}/cancel', [
-            AppointmentController::class,
-            'cancel',
-        ])->name('appointments.cancel');
+            // Detail appointment M5
+            Route::get('/appointments/{appointment}', [
+                PageController::class,
+                'staffAppointmentDetail',
+            ])->name('appointments.show');
+
+
+            // Perubahan status appointment
+            // Mempertahankan endpoint milikmu
+            Route::patch('/appointments/{appointment}/status', [
+                AppointmentController::class,
+                'updateStatus',
+            ])->name('appointments.status');
+
+
+            // Pembatalan appointment
+            // Mempertahankan endpoint milikmu
+            Route::patch('/appointments/{appointment}/cancel', [
+                AppointmentController::class,
+                'cancel',
+            ])->name('appointments.cancel');
+
+
+            // Kalender workload groomer M5
+            Route::get('/kalender-groomer', [
+                PageController::class,
+                'groomerCalendar',
+            ])->name('groomers.calendar');
+
 
             // Halaman Blade pemilik dan hewan
-            Route::prefix('halaman')->name('pages.')->group(function () {
-                Route::get('/pemilik', [
-                    PageController::class,
-                    'staffCustomers',
-                ])->name('customers');
+            Route::prefix('halaman')
+                ->name('pages.')
+                ->group(function () {
 
-                Route::get('/hewan', [
-                    PageController::class,
-                    'staffPets',
-                ])->name('pets');
-            });
+                    Route::get('/pemilik', [
+                        PageController::class,
+                        'staffCustomers',
+                    ])->name('customers');
 
-            
-            // Pilihan faktor durasi untuk form hewan.
-            // Admin dan resepsionis hanya mendapatkan akses membaca.
+                    Route::get('/hewan', [
+                        PageController::class,
+                        'staffPets',
+                    ])->name('pets');
+                });
+
+
+            // Pilihan faktor durasi
             Route::get('/faktor-durasi/options', [
                 DurationFactorController::class,
                 'options',
             ])->name('faktor-durasi.options');
 
-            // CRUD pemilik (JSON)
+
+            // CRUD pemilik
             Route::resource('pemilik', CustomerController::class)
                 ->parameters(['pemilik' => 'customer'])
                 ->except(['create', 'edit']);
 
-            // CRUD hewan (JSON)
+
+            // Riwayat grooming hewan M5
+            Route::get('/hewan/{pet}/riwayat-grooming', [
+                PageController::class,
+                'staffPetGroomingHistory',
+            ])->name('pets.grooming-history');
+
+
+            // CRUD hewan
             Route::resource('hewan', PetController::class)
                 ->parameters(['hewan' => 'pet'])
                 ->except(['create', 'edit']);
         });
-        
 
-    // Halaman khusus groomer
+
+    /*
+    |--------------------------------------------------------------------------
+    | GROOMER ROUTES (M5)
+    |--------------------------------------------------------------------------
+    */
+
     Route::prefix('groomer')
         ->name('groomer.')
         ->middleware('role:groomer')
         ->group(function () {
+
+            // Daftar tugas groomer
             Route::get('/tugas', [
                 PageController::class,
                 'groomerTasks',
             ])->name('tasks.index');
+
+
+            // Mulai pengerjaan grooming
+            Route::post('/tugas/{appointment}/mulai', [
+                AppointmentStatusController::class,
+                'mulai',
+            ])->name('tasks.start');
+
+
+            // Selesaikan pengerjaan grooming
+            Route::post('/tugas/{appointment}/selesai', [
+                AppointmentStatusController::class,
+                'selesai',
+            ])->name('tasks.finish');
         });
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES
+|--------------------------------------------------------------------------
+*/
 
 require __DIR__.'/auth.php';

@@ -1,112 +1,22 @@
-
 <x-app-layout>
-    <x-slot name="header">Hewan</x-slot>
-
-    @php
-        $masterConfig = [
-            'kind' => 'pet',
-            'title' => 'Hewan',
-            'singular' => 'Hewan',
-            'description' => 'Kelola profil dan informasi kesehatan hewan.',
-            'api' => '/staf/hewan',
-            'canCreate' => true,
-            'canDelete' => true,
-
-            'fields' => [
-                [
-                    'name' => 'customer_id',
-                    'label' => 'Pemilik',
-                    'type' => 'select',
-                    'required' => true,
-                    'options' => [],
-                ],
-                [
-                    'name' => 'nama',
-                    'label' => 'Nama hewan',
-                    'type' => 'text',
-                    'required' => true,
-                ],
-                [
-                    'name' => 'spesies',
-                    'label' => 'Jenis hewan',
-                    'type' => 'select',
-                    'required' => true,
-                    'options' => [
-                        [
-                            'value' => 'anjing',
-                            'label' => 'Anjing',
-                        ],
-                        [
-                            'value' => 'kucing',
-                            'label' => 'Kucing',
-                        ],
-                    ],
-                ],
-                [
-                    'name' => 'ras',
-                    'label' => 'Ras',
-                    'type' => 'text',
-                    'required' => false,
-                ],
-                [
-                    'name' => 'ukuran',
-                    'label' => 'Ukuran',
-                    'type' => 'select',
-                    'required' => true,
-                    'options' => [],
-                ],
-                [
-                    'name' => 'jenis_bulu',
-                    'label' => 'Jenis bulu',
-                    'type' => 'select',
-                    'required' => true,
-                    'options' => [],
-                ],
-                [
-                    'name' => 'perilaku',
-                    'label' => 'Perilaku',
-                    'type' => 'select',
-                    'required' => false,
-                    'options' => [],
-                ],
-                [
-                    'name' => 'alergi',
-                    'label' => 'Alergi',
-                    'type' => 'textarea',
-                    'required' => false,
-                ],
-                [
-                    'name' => 'catatan_kesehatan',
-                    'label' => 'Catatan kesehatan',
-                    'type' => 'textarea',
-                    'required' => false,
-                ],
-            ],
-
-            'columns' => [
-                [
-                    'key' => 'nama',
-                    'label' => 'Nama hewan',
-                    'type' => '',
-                ],
-                [
-                    'key' => 'spesies',
-                    'label' => 'Jenis',
-                    'type' => '',
-                ],
-                [
-                    'key' => 'ras',
-                    'label' => 'Ras',
-                    'type' => '',
-                ],
-                [
-                    'key' => 'customer.nama',
-                    'label' => 'Pemilik',
-                    'type' => '',
-                ],
-            ],
-        ];
-    @endphp
-
-    @include('shared.master-crud')
+    <x-slot name="header"><h1 class="m5-page-title">Data Hewan</h1></x-slot>
+    <section class="m5-page">
+        <div class="m5-page-heading"><div><span class="m5-eyebrow">DATA PELANGGAN</span><h2>Daftar Hewan</h2><p>Pilih hewan untuk melihat riwayat grooming sebelumnya.</p></div></div>
+        <section class="m5-panel">
+            @if($pets->count())
+                <div class="m5-pet-grid">
+                    @foreach($pets as $pet)
+                        <article class="m5-pet-card">
+                            <span class="m5-pet-avatar">{{ strtoupper(mb_substr($pet->nama, 0, 1)) }}</span>
+                            <div class="m5-pet-card-info"><h3>{{ $pet->nama }}</h3><p>{{ ucfirst($pet->spesies) }}{{ $pet->ras ? ' · '.$pet->ras : '' }}</p><span>Pemilik: {{ $pet->customer?->nama ?? '-' }}</span></div>
+                            <a class="m5-button m5-button--light" href="{{ route('staf.pets.grooming-history', $pet) }}">Riwayat grooming</a>
+                        </article>
+                    @endforeach
+                </div>
+                <div class="m5-pagination">{{ $pets->links() }}</div>
+            @else
+                <div class="m5-empty"><span class="m5-empty-icon">♡</span><h3>Belum ada data hewan</h3><p>Data hewan pelanggan akan tampil di sini setelah ditambahkan.</p></div>
+            @endif
+        </section>
+    </section>
 </x-app-layout>

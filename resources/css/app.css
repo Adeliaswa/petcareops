@@ -39,3 +39,5 @@
 
 /* Appointment Management PB-22 */
 @import './pages/appointments.css';
+/* M5 Operasional Harian */
+@import './pages/operations.css';

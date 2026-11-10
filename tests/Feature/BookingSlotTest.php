@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Appointment;
+use App\Models\Customer;
 use App\Models\Groomer;
+use App\Models\Pet;
 use App\Models\Service;
 use App\Models\User;
 use Carbon\Carbon;
@@ -166,5 +169,98 @@ class BookingSlotTest extends TestCase
                 $mulai->timestamp
             );
         }
+    }
+
+    public function test_cancelled_appointment_releases_slot_through_http(): void
+    {
+        Role::findOrCreate('resepsionis', 'web');
+
+        $resepsionis = User::factory()->create([
+            'is_active' => true,
+        ]);
+
+        $resepsionis->assignRole('resepsionis');
+
+        $customer = Customer::create([
+            'nama' => 'Customer Test',
+            'no_wa' => '081234567890',
+        ]);
+
+        $pet = Pet::create([
+            'customer_id' => $customer->id,
+            'nama' => 'Milo',
+            'spesies' => 'anjing',
+            'ukuran' => 'kecil',
+            'jenis_bulu' => 'pendek',
+            'perilaku' => 'normal',
+        ]);
+
+        $appointment = Appointment::create([
+            'pet_id' => $pet->id,
+            'groomer_id' => $this->groomer->id,
+            'mulai' => Carbon::parse(
+                '2026-11-09 09:00:00',
+                'Asia/Jakarta'
+            ),
+            'selesai_estimasi' => Carbon::parse(
+                '2026-11-09 09:30:00',
+                'Asia/Jakarta'
+            ),
+            'durasi_estimasi' => 30,
+            'status' => 'menunggu',
+            'token' => bin2hex(random_bytes(32)),
+            'rincian_estimasi' => [],
+            'sumber' => 'publik',
+        ]);
+
+        // Pastikan jadwal 09.00 awalnya tidak tersedia.
+        $slotAwal = $this->postJson(
+            '/booking/slot',
+            $this->payload()
+        );
+
+        $slotAwal->assertOk();
+
+        $this->assertNotContains(
+            '2026-11-09T09:00:00',
+            collect($slotAwal->json('slots'))
+                ->pluck('mulai')
+                ->map(fn ($mulai) => Carbon::parse($mulai)->format('Y-m-d\TH:i:s'))
+                ->all()
+        );
+
+        // Resepsionis membatalkan appointment.
+        $this->actingAs($resepsionis)
+    ->post(
+        route('staf.appointments.cancel', $appointment),
+        [
+            'alasan_batal' => 'Pelanggan membatalkan booking.',
+        ]
+    )
+    ->assertRedirect();
+
+        $this->assertDatabaseHas('appointments', [
+            'id' => $appointment->id,
+            'status' => 'dibatalkan',
+            'alasan_batal' => 'Pelanggan membatalkan booking.',
+        ]);
+
+        // Pastikan slot 09.00 tersedia kembali.
+        $slotSetelahBatal = $this->postJson(
+            '/booking/slot',
+            $this->payload()
+        );
+
+        $slotSetelahBatal->assertOk();
+
+        $waktuTersedia = collect($slotSetelahBatal->json('slots'))
+            ->pluck('mulai')
+            ->map(fn ($mulai) => Carbon::parse($mulai)->format('Y-m-d\TH:i:s'))
+            ->all();
+
+        $this->assertContains(
+            '2026-11-09T09:00:00',
+            $waktuTersedia
+        );
     }
 }

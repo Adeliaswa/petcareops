@@ -1,116 +1,308 @@
 <x-app-layout>
-    <x-slot name="header">Appointment</x-slot>
+    <x-slot name="header">
+        <h1 class="m5-page-title">Appointment</h1>
+    </x-slot>
 
-    <section class="appointments-page" x-data="appointmentManager">
-        <div class="appointments-intro">
+    <section class="m5-page">
+
+        {{-- PAGE HEADING --}}
+        <div class="m5-page-heading">
             <div>
-                <span class="appointments-eyebrow">OPERASIONAL</span>
-                <h1 class="appointments-title">Daftar Appointment</h1>
-                <p class="appointments-description">Pantau jadwal, layanan, dan progres grooming pelanggan.</p>
-            </div>
-            <a href="{{ route('staf.booking.create') }}" class="appointments-add-button">＋ Buat Walk-in</a>
-        </div>
-
-        <div class="appointments-summary">
-            <article><span>Total Appointment</span><strong>{{ number_format($summary['total']) }}</strong><small>Seluruh data</small></article>
-            <article><span>Menunggu</span><strong>{{ number_format($summary['menunggu']) }}</strong><small>Belum dikerjakan</small></article>
-            <article><span>Dikerjakan</span><strong>{{ number_format($summary['dikerjakan']) }}</strong><small>Sedang grooming</small></article>
-            <article><span>Selesai</span><strong>{{ number_format($summary['selesai']) }}</strong><small>Menunggu dijemput / selesai</small></article>
-        </div>
-
-        <form method="GET" action="{{ route('staf.appointments.index') }}" class="appointments-filters">
-            <label class="appointments-search">
-                <span>Cari appointment</span>
-                <input type="search" name="q" value="{{ request('q') }}" placeholder="ID, nama pemilik, atau hewan">
-            </label>
-            <label>
-                <span>Tanggal</span>
-                <input type="date" name="tanggal" value="{{ request('tanggal') }}">
-            </label>
-            <label>
-                <span>Groomer</span>
-                <select name="groomer_id">
-                    <option value="">Semua groomer</option>
-                    @foreach($groomers as $groomer)
-                        <option value="{{ $groomer->id }}" @selected((string)request('groomer_id') === (string)$groomer->id)>
-                            {{ $groomer->user?->name ?? 'Groomer #'.$groomer->id }}
-                        </option>
-                    @endforeach
-                </select>
-            </label>
-            <label>
-                <span>Status</span>
-                <select name="status">
-                    <option value="">Semua status</option>
-                    @foreach(['menunggu'=>'Menunggu','dikerjakan'=>'Dikerjakan','selesai'=>'Selesai','dijemput'=>'Dijemput','dibatalkan'=>'Dibatalkan'] as $key=>$label)
-                        <option value="{{ $key }}" @selected(request('status') === $key)>{{ $label }}</option>
-                    @endforeach
-                </select>
-            </label>
-            <button type="submit" class="appointments-filter-button">Terapkan</button>
-            <a href="{{ route('staf.appointments.index') }}" class="appointments-reset-button">Reset</a>
-        </form>
-
-        <div class="appointments-feedback" x-show="message" x-cloak x-text="message"></div>
-
-        <div class="appointments-panel">
-            <div class="appointments-panel-header">
-                <div><h2>Semua Appointment</h2><p>{{ $appointments->total() }} data ditemukan</p></div>
-                <span class="appointments-total-badge">Halaman {{ $appointments->currentPage() }} / {{ $appointments->lastPage() }}</span>
+                <span class="m5-eyebrow">OPERASIONAL HARIAN</span>
+                <h2>Daftar Appointment</h2>
+                <p>Pantau jadwal grooming, pemilik, layanan, dan status antrean.</p>
             </div>
 
-            @if($appointments->isNotEmpty())
-                <div class="appointments-table-wrapper">
-                    <table class="appointments-table">
-                        <thead><tr><th>Kode</th><th>Jadwal</th><th>Pemilik & Hewan</th><th>Layanan</th><th>Groomer</th><th>Status</th><th>Aksi</th></tr></thead>
-                        <tbody>
-                        @foreach($appointments as $appointment)
-                            @php($status = $appointment->status ?? 'unknown')
-                            <tr data-appointment-row="{{ $appointment->id }}">
-                                <td><strong>#{{ $appointment->id }}</strong><small class="appointments-source">{{ ucfirst($appointment->sumber ?? 'booking') }}</small></td>
-                                <td>{{ $appointment->mulai?->format('d M Y') ?? '-' }}<small>{{ $appointment->mulai?->format('H:i') ?? '-' }} WIB</small></td>
-                                <td><strong>{{ $appointment->pet?->customer?->nama ?? 'Pemilik tidak tersedia' }}</strong><small>{{ $appointment->pet?->nama ?? 'Hewan tidak tersedia' }}</small></td>
-                                <td><div class="appointments-service-list">@forelse($appointment->services as $service)<span>{{ $service->nama }}</span>@empty<small>-</small>@endforelse</div></td>
-                                <td>{{ $appointment->groomer?->user?->name ?? 'Belum ditentukan' }}</td>
-                                <td><span class="appointments-status appointments-status--{{ \Illuminate\Support\Str::slug($status) }}" data-status>{{ \Illuminate\Support\Str::headline($status) }}</span></td>
-                                <td>
-                                    <div class="appointments-actions">
-                                        @if($status === 'menunggu')
-                                            <button type="button" class="appointments-action appointments-action--start" @click="changeStatus({{ $appointment->id }}, 'dikerjakan')">Mulai</button>
-                                            <button type="button" class="appointments-action appointments-action--cancel" @click="openCancel({{ $appointment->id }})">Batalkan</button>
-                                        @elseif($status === 'dikerjakan')
-                                            <button type="button" class="appointments-action appointments-action--complete" @click="changeStatus({{ $appointment->id }}, 'selesai')">Selesai</button>
-                                        @elseif($status === 'selesai')
-                                            <button type="button" class="appointments-action appointments-action--pickup" @click="changeStatus({{ $appointment->id }}, 'dijemput')">Sudah dijemput</button>
-                                        @else
-                                            <span class="appointments-muted">Tidak ada aksi</span>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
+            <a class="m5-button m5-button--primary"
+               href="{{ route('staf.booking.create') }}">
+                <span aria-hidden="true">＋</span>
+                Booking walk-in
+            </a>
+        </div>
+
+        {{-- STATISTICS --}}
+        <div class="m5-stat-grid">
+
+            <article class="m5-stat-card">
+                <span class="m5-stat-icon m5-stat-icon--brown">▦</span>
+                <div>
+                    <span class="m5-stat-label">Hasil pencarian</span>
+                    <strong>{{ $appointments->total() }}</strong>
+                    <small>appointment ditemukan</small>
+                </div>
+            </article>
+
+            <article class="m5-stat-card">
+                <span class="m5-stat-icon m5-stat-icon--peach">◷</span>
+                <div>
+                    <span class="m5-stat-label">Menunggu</span>
+                    <strong>{{ $appointments->getCollection()->where('status', 'menunggu')->count() }}</strong>
+                    <small>di halaman ini</small>
+                </div>
+            </article>
+
+            <article class="m5-stat-card">
+                <span class="m5-stat-icon m5-stat-icon--sage">✓</span>
+                <div>
+                    <span class="m5-stat-label">Selesai</span>
+                    <strong>{{ $appointments->getCollection()->whereIn('status', ['selesai', 'dijemput'])->count() }}</strong>
+                    <small>di halaman ini</small>
+                </div>
+            </article>
+
+        </div>
+
+        {{-- FILTER DAN PENCARIAN --}}
+        <section class="m5-panel">
+
+            <div class="m5-panel-heading">
+                <div>
+                    <h3>Filter dan pencarian</h3>
+                    <p>Temukan appointment berdasarkan nama, status, groomer, atau tanggal.</p>
+                </div>
+
+                <span class="m5-count">
+                    {{ $appointments->total() }} data
+                </span>
+            </div>
+
+            <form method="GET"
+                  action="{{ route('staf.appointments.index') }}"
+                  class="m5-filter-grid">
+
+                {{-- PENCARIAN --}}
+                <label class="m5-field m5-field--search">
+                    <span>Cari hewan atau pemilik</span>
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ $filters['q'] ?? '' }}"
+                        placeholder="Contoh: Lancelot atau Rhea"
+                    >
+                </label>
+
+                {{-- FILTER STATUS --}}
+                <label class="m5-field">
+                    <span>Status</span>
+
+                    <select name="status">
+                        <option value="">Semua status</option>
+
+                        @foreach ([
+                            'menunggu' => 'Menunggu',
+                            'dikerjakan' => 'Dikerjakan',
+                            'selesai' => 'Selesai',
+                            'dijemput' => 'Dijemput',
+                            'dibatalkan' => 'Dibatalkan',
+                        ] as $value => $label)
+
+                            <option
+                                value="{{ $value }}"
+                                @selected(($filters['status'] ?? '') === $value)
+                            >
+                                {{ $label }}
+                            </option>
+
                         @endforeach
+                    </select>
+                </label>
+
+                {{-- FILTER GROOMER --}}
+                <label class="m5-field">
+                    <span>Groomer</span>
+
+                    <select name="groomer_id">
+                        <option value="">Semua groomer</option>
+
+                        @foreach ($groomers as $groomer)
+                            <option
+                                value="{{ $groomer->id }}"
+                                @selected((string) ($filters['groomer_id'] ?? '') === (string) $groomer->id)
+                            >
+                                {{ $groomer->user?->name ?? 'Groomer #' . $groomer->id }}
+                            </option>
+                        @endforeach
+                    </select>
+                </label>
+
+                {{-- FILTER TANGGAL --}}
+                <label class="m5-field">
+                    <span>Tanggal</span>
+
+                    <input
+                        type="date"
+                        name="tanggal"
+                        value="{{ $filters['tanggal'] ?? '' }}"
+                    >
+                </label>
+
+                {{-- ACTION --}}
+                <div class="m5-filter-actions">
+                    <button
+                        class="m5-button m5-button--primary"
+                        type="submit"
+                    >
+                        Terapkan
+                    </button>
+
+                    <a
+                        class="m5-button m5-button--light"
+                        href="{{ route('staf.appointments.index') }}"
+                    >
+                        Reset
+                    </a>
+                </div>
+
+            </form>
+        </section>
+
+        {{-- TABEL APPOINTMENT --}}
+        <section class="m5-panel">
+
+            <div class="m5-panel-heading">
+                <div>
+                    <h3>Jadwal appointment</h3>
+                    <p>Urutan berdasarkan waktu mulai terbaru.</p>
+                </div>
+            </div>
+
+            @if ($appointments->count() > 0)
+
+                <div class="m5-table-wrap">
+                    <table class="m5-table">
+
+                        <thead>
+                            <tr>
+                                <th>Waktu</th>
+                                <th>Hewan &amp; Pemilik</th>
+                                <th>Layanan</th>
+                                <th>Groomer</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach ($appointments as $appointment)
+
+                                <tr>
+
+                                    {{-- WAKTU --}}
+                                    <td>
+                                        <strong class="m5-time">
+                                            {{ $appointment->mulai?->format('H:i') ?? '-' }}
+                                        </strong>
+
+                                        <span class="m5-subtext">
+                                            {{ $appointment->mulai?->translatedFormat('d M Y') ?? '-' }}
+                                        </span>
+                                    </td>
+
+                                    {{-- HEWAN DAN PEMILIK --}}
+                                    <td>
+                                        <div class="m5-person">
+                                            <strong>
+                                                {{ $appointment->pet?->nama ?? 'Hewan dihapus' }}
+                                            </strong>
+
+                                            <span>
+                                                {{ $appointment->pet?->customer?->nama ?? 'Pemilik tidak tersedia' }}
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    {{-- LAYANAN --}}
+                                    <td>
+                                        <div class="m5-tags">
+
+                                            @forelse ($appointment->services as $service)
+
+                                                <span>
+                                                    {{ $service->nama_layanan }}
+                                                </span>
+
+                                            @empty
+
+                                                <span class="m5-subtext">
+                                                    Belum ada layanan
+                                                </span>
+
+                                            @endforelse
+
+                                        </div>
+                                    </td>
+
+                                    {{-- GROOMER --}}
+                                    <td>
+                                        {{ $appointment->groomer?->user?->name ?? 'Belum ditentukan' }}
+                                    </td>
+
+                                    {{-- STATUS --}}
+                                    <td>
+                                        <span class="m5-status m5-status--{{ $appointment->status }}">
+                                            {{ ucfirst($appointment->status) }}
+                                        </span>
+                                    </td>
+
+                                    {{-- DETAIL --}}
+                                    <td>
+                                        <a
+                                            class="m5-text-link"
+                                            href="{{ route('staf.appointments.show', $appointment) }}"
+                                        >
+                                            Detail
+                                            <span aria-hidden="true">→</span>
+                                        </a>
+                                    </td>
+
+                                </tr>
+
+                            @endforeach
+
                         </tbody>
                     </table>
                 </div>
-                <div class="appointments-pagination">{{ $appointments->links() }}</div>
-            @else
-                <div class="appointments-empty"><span>🐾</span><h3>Belum ada appointment</h3><p>Coba ubah filter atau buat booking walk-in baru.</p></div>
-            @endif
-        </div>
 
-        <div class="appointments-modal-backdrop" x-show="cancelModal" x-cloak @keydown.escape.window="cancelModal = false">
-            <section class="appointments-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-title">
-                <button type="button" class="appointments-modal-close" @click="cancelModal = false" aria-label="Tutup">×</button>
-                <span class="appointments-eyebrow">KONFIRMASI</span>
-                <h2 id="cancel-title">Batalkan appointment?</h2>
-                <p>Appointment hanya dapat dibatalkan saat statusnya masih menunggu.</p>
-                <label>Alasan pembatalan (opsional)<textarea x-model="cancelReason" maxlength="500" placeholder="Tuliskan alasan pembatalan..."></textarea></label>
-                <small class="appointments-modal-note">Catatan: alasan belum disimpan ke database karena belum tersedia kolom khusus.</small>
-                <div class="appointments-modal-actions">
-                    <button type="button" class="appointments-reset-button" @click="cancelModal = false">Kembali</button>
-                    <button type="button" class="appointments-action appointments-action--cancel" :disabled="busy" @click="confirmCancel()">Ya, batalkan</button>
+                {{-- PAGINATION --}}
+                <div class="m5-pagination">
+
+                    <span>
+                        Menampilkan
+                        {{ $appointments->firstItem() ?? 0 }}–{{ $appointments->lastItem() ?? 0 }}
+                        dari {{ $appointments->total() }} data
+                    </span>
+
+                    {{ $appointments->links() }}
+
                 </div>
-            </section>
-        </div>
+
+            @else
+
+                {{-- EMPTY STATE --}}
+                <div class="m5-empty">
+
+                    <span class="m5-empty-icon">▦</span>
+
+                    <h3>Belum ada appointment</h3>
+
+                    <p>
+                        Tidak ada jadwal yang cocok dengan filter ini.
+                        Coba ubah pencarian atau buat booking walk-in.
+                    </p>
+
+                    <a
+                        class="m5-button m5-button--primary"
+                        href="{{ route('staf.booking.create') }}"
+                    >
+                        Buat booking walk-in
+                    </a>
+
+                </div>
+
+            @endif
+
+        </section>
+
     </section>
 </x-app-layout>
