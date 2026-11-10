@@ -8,6 +8,113 @@ PetCareOps adalah aplikasi web untuk membantu pengelolaan operasional layanan pe
 
 **Live Demo:** https://petcareops-production.up.railway.app
 
+## Akses Website dan Jenis Pengguna
+
+PetCareOps menyediakan tiga area akses yang disesuaikan dengan kebutuhan operasional salon grooming, yaitu halaman publik untuk pelanggan, area pengelolaan staf, dan halaman khusus groomer.
+
+### 1. Pelanggan (Public)
+
+Pelanggan dapat mengakses website tanpa perlu melakukan registrasi atau login. Melalui halaman publik, pelanggan dapat:
+
+- Melihat informasi layanan grooming yang tersedia.
+- Memilih hewan peliharaan dan layanan yang ingin dipesan.
+- Melihat estimasi durasi grooming berdasarkan karakteristik hewan.
+- Melihat pilihan jadwal yang tersedia sesuai durasi layanan dan ketersediaan groomer.
+- Melakukan pemesanan menggunakan nomor WhatsApp.
+- Mendapatkan bukti pemesanan dan tautan untuk memantau status appointment.
+- Memantau status grooming tanpa harus login.
+
+### 2. Admin / Owner
+
+Admin merupakan pemilik atau pengelola salon yang memiliki akses untuk mengatur data dan operasional sistem. Admin dapat mengakses fitur:
+
+- Dashboard dan ringkasan operasional.
+- Pengelolaan akun staf, termasuk membuat akun, menonaktifkan akun, dan mengatur ulang kata sandi.
+- Pengelolaan data pelanggan dan hewan peliharaan.
+- Pengelolaan layanan grooming dan harga.
+- Pengaturan faktor estimasi durasi grooming.
+- Pengelolaan data groomer, keahlian, shift kerja, dan hari libur.
+- Melihat daftar appointment dan kalender beban kerja groomer.
+- Melihat riwayat grooming hewan peliharaan.
+- Mengelola pengingat grooming berkala.
+
+### 3. Resepsionis
+
+Resepsionis bertanggung jawab menangani pemesanan, antrean, dan transaksi pelanggan. Fitur yang dapat diakses meliputi:
+
+- Melihat dan mengelola daftar appointment harian.
+- Membuat appointment untuk pelanggan yang datang langsung (walk-in).
+- Mengelola data pelanggan dan hewan peliharaan.
+- Melihat kalender kerja dan pembagian jadwal groomer.
+- Memperbarui status antrean appointment.
+- Melakukan pembatalan appointment.
+- Melihat riwayat grooming hewan peliharaan.
+- Mencatat pembayaran pelanggan.
+- Membuat dan mengunduh invoice dalam format PDF.
+- Mengelola pengingat grooming dan menyiapkan pesan WhatsApp untuk pelanggan.
+
+### 4. Groomer
+
+Groomer memiliki halaman khusus yang dirancang agar mudah digunakan melalui telepon genggam. Fitur yang tersedia meliputi:
+
+- Melihat daftar tugas grooming yang ditugaskan kepadanya.
+- Melihat informasi dan karakteristik hewan yang akan ditangani.
+- Membaca catatan khusus, seperti alergi dan perilaku hewan.
+- Melihat riwayat perawatan hewan.
+- Memperbarui status pengerjaan grooming.
+- Mencatat waktu mulai dan selesai pengerjaan.
+- Mencatat hasil serta kondisi hewan setelah grooming.
+
+## Fitur Utama PetCareOps
+
+PetCareOps dikembangkan untuk membantu salon grooming mengelola operasional secara lebih terstruktur melalui fitur-fitur berikut.
+
+| Fitur | Deskripsi |
+|---|---|
+| **Estimasi Durasi Grooming** | Menghitung perkiraan waktu pengerjaan berdasarkan ukuran, jenis bulu, perilaku, dan kondisi hewan, serta faktor tambahan dan waktu pembersihan. |
+| **Smart Slot Finder** | Menampilkan jadwal yang sesuai dengan estimasi durasi, jam kerja, keahlian, istirahat, dan hari libur groomer. |
+| **Penugasan Groomer Otomatis** | Mempertimbangkan keahlian dan beban kerja groomer agar pembagian tugas lebih merata. |
+| **Online Booking** | Memungkinkan pelanggan memesan layanan melalui halaman publik tanpa membuat akun. |
+| **Walk-in Booking** | Memungkinkan resepsionis mencatat pemesanan pelanggan yang datang langsung ke salon. |
+| **Manajemen Appointment** | Mengelola jadwal, antrean, status pengerjaan, dan pembatalan appointment. |
+| **Kalender Beban Kerja** | Menampilkan jadwal appointment setiap groomer dalam tampilan kalender harian. |
+| **Manajemen Data Pelanggan dan Hewan** | Menyimpan informasi pemilik, profil hewan, karakteristik, alergi, dan perilaku hewan. |
+| **Riwayat Grooming** | Mendokumentasikan hasil perawatan serta perbandingan estimasi dan durasi aktual setiap hewan. |
+| **Pengingat Grooming Berkala** | Membantu mengingatkan pelanggan ketika hewan sudah waktunya melakukan grooming kembali melalui WhatsApp atau tautan `wa.me`. |
+| **Invoice dan Pembayaran** | Memungkinkan resepsionis mencatat pembayaran dan menghasilkan invoice dalam format PDF. |
+| **Manajemen Hak Akses** | Membatasi akses halaman dan fitur berdasarkan peran admin, resepsionis, dan groomer. |
+
+## Akun Demo
+
+Berikut akun staf yang dapat digunakan untuk mencoba fitur berdasarkan masing-masing role pada website PetCareOps.
+
+| Role | Email |
+|---|---|
+| Admin / Owner | `admin@petcareops.test` |
+| Resepsionis | `receptionist@petcareops.test` |
+| Groomer 1 | `groomer1@petcareops.test` |
+| Groomer 2 | `groomer2@petcareops.test` |
+| Groomer 3 | `groomer3@petcareops.test` |
+
+**Catatan:**
+- Pelanggan tidak memerlukan akun untuk melakukan pemesanan.
+- Gunakan akun di atas hanya untuk keperluan demonstrasi dan pengujian.
+- Password akun demo mengikuti konfigurasi yang disediakan untuk lingkungan demo.
+- Setiap akun memiliki hak akses sesuai dengan perannya.
+
+## Batasan Fitur Versi Saat Ini
+
+PetCareOps dikembangkan sebagai Minimum Viable Product (MVP) yang berfokus pada operasional inti salon grooming. Beberapa fitur yang belum tersedia pada versi saat ini antara lain:
+
+- Dashboard analitik lanjutan, seperti pendapatan per jam kerja, utilisasi groomer, dan akurasi estimasi.
+- Kalibrasi estimasi durasi secara otomatis berdasarkan rata-rata durasi aktual.
+- Pembatalan dan penjadwalan ulang appointment secara mandiri oleh pelanggan.
+- Pembayaran online melalui payment gateway.
+- Unggah foto hewan dan hasil grooming.
+- Operasional multi-cabang.
+- Integrasi WhatsApp dua arah.
+
+Fitur-fitur tersebut menjadi bagian dari rencana pengembangan lanjutan PetCareOps.
 ## Teknologi
 
 - Laravel 12
@@ -80,8 +187,6 @@ DB_USERNAME=your-database-username
 DB_PASSWORD=your-database-password
 ```
 
-Jangan menggunakan atau membagikan kredensial database milik anggota tim lain.
-
 ### 5. Konfigurasi Password Seeder
 
 Akun demo dibuat melalui `UserSeeder`. Password akun diambil dari konfigurasi `config/petcareops.php` dan environment lokal.
@@ -144,7 +249,7 @@ Akun berikut disediakan oleh `UserSeeder`:
 | Groomer 2 | groomer2@petcareops.test |
 | Groomer 3 | groomer3@petcareops.test |
 
-Password mengikuti konfigurasi lokal `config/petcareops.php` dan environment yang digunakan. Tidak ada password default yang dicantumkan dalam repository.
+Password mengikuti konfigurasi lokal `config/petcareops.php` dan environment yang digunakan.
 
 ## Data Demonstrasi
 
