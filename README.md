@@ -6,6 +6,8 @@
 
 PetCareOps adalah aplikasi web untuk membantu pengelolaan operasional layanan pet grooming. Aplikasi ini mencakup pengelolaan pelanggan dan hewan peliharaan, layanan grooming, estimasi durasi, penjadwalan appointment, pengelolaan groomer, pencatatan hasil grooming, invoice, pembayaran, dan pengingat grooming berkala.
 
+**Live Demo:** https://petcareops-production.up.railway.app
+
 ## Teknologi
 
 - Laravel 12
