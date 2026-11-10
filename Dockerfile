@@ -17,7 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libonig-dev \
     unzip \
     && docker-php-ext-install pdo_pgsql mbstring bcmath zip \
-    && (a2dismod mpm_event mpm_worker || true) \
+    && (a2dismod mpm_event || true) \
+    && (a2dismod mpm_worker || true) \
     && a2enmod mpm_prefork rewrite \
     && sed -i 's/^Listen 80$/Listen 10000/' /etc/apache2/ports.conf \
     && rm -rf /var/lib/apt/lists/*
