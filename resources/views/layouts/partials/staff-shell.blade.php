@@ -48,7 +48,15 @@
                         :active="request()->routeIs('staf.appointments.*')"
                     />
 
-                    {{-- Pengingat Grooming M6 --}}
+                    {{-- Kalender Groomer --}}
+                    <x-sidebar-link
+                        :href="route('staf.groomers.calendar')"
+                        icon="calendar"
+                        label="Kalender Groomer"
+                        :active="request()->routeIs('staf.groomers.calendar')"
+                    />
+
+                    {{-- Pengingat Grooming --}}
                     <x-sidebar-link
                         :href="route('staf.pengingat.index')"
                         icon="bell"
@@ -179,14 +187,22 @@
                 {{-- Notifikasi --}}
                 @include('layouts.partials.flash')
 
-                {{-- Header halaman --}}
+                {{-- HEADER BERSAMA PET CARE OPS --}}
                 @isset($header)
-                    <header class="page-header page-header--compact">
+                    <header class="page-header page-header--compact pco-shared-header">
+
                         <div class="page-header__text">
                             <div class="page-header__title">
                                 {{ $header }}
                             </div>
                         </div>
+
+                        {{-- Ornamen paw --}}
+                        <span
+                            class="pco-header-paw"
+                            aria-hidden="true"
+                        >🐾</span>
+
                     </header>
                 @endisset
 
@@ -198,3 +214,4 @@
 
     </div>
 </div>
+ 

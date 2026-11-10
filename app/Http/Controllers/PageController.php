@@ -2,20 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
+use App\Models\Customer;
 use App\Models\DurationFactor;
 use App\Models\Groomer;
 use App\Models\GroomerTimeOff;
-use App\Models\Service;
-use App\Models\Customer;
 use App\Models\Pet;
-use App\Models\Appointment;
+use App\Models\Service;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PageController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD
+    |--------------------------------------------------------------------------
+    */
+
     public function dashboard()
     {
-        // Ringkasan dashboard
         $stats = [
             'appointments_today' => Appointment::query()
                 ->whereDate('mulai', today())
@@ -31,10 +38,9 @@ class PageController extends Controller
             'pets' => Pet::query()->count(),
 
             'active_groomers' => Groomer::query()
-                ->whereHas(
-                    'user',
-                    fn ($query) => $query->where('is_active', true)
-                )
+                ->whereHas('user', function ($query) {
+                    $query->where('is_active', true);
+                })
                 ->count(),
         ];
 
@@ -56,13 +62,22 @@ class PageController extends Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN - MASTER DATA
+    |--------------------------------------------------------------------------
+    */
+
     public function adminServices()
     {
         $services = Service::query()
             ->latest()
             ->paginate(15);
 
-        return view('admin.services.index', compact('services'));
+        return view(
+            'admin.services.index',
+            compact('services')
+        );
     }
 
     public function adminDurationFactors()
@@ -85,12 +100,16 @@ class PageController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('admin.groomers.index', compact('groomers'));
+        return view(
+            'admin.groomers.index',
+            compact('groomers')
+        );
     }
 
     public function adminGroomerShifts(string $groomer)
     {
-        $groomer = Groomer::with('user:id,name,email')
+        $groomer = Groomer::query()
+            ->with('user:id,name,email')
             ->findOrFail($groomer);
 
         $shifts = $groomer->shifts()
@@ -106,7 +125,8 @@ class PageController extends Controller
 
     public function adminGroomerTimeOff(string $groomer)
     {
-        $groomer = Groomer::with('user:id,name,email')
+        $groomer = Groomer::query()
+            ->with('user:id,name,email')
             ->findOrFail($groomer);
 
         $timeOffs = $groomer->timeOffs()
@@ -121,16 +141,23 @@ class PageController extends Controller
 
     public function adminTimeOff()
     {
-        $timeOffs = GroomerTimeOff::with('groomer.user:id,name')
+        $timeOffs = GroomerTimeOff::query()
+            ->with('groomer.user:id,name')
             ->orderBy('tanggal_mulai')
             ->get();
 
-        return view('admin.time-off.index', compact('timeOffs'));
+        return view(
+            'admin.time-off.index',
+            compact('timeOffs')
+        );
     }
 
-    /**
-     * Daftar appointment untuk admin dan resepsionis.
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF - APPOINTMENT M5
+    |--------------------------------------------------------------------------
+    */
+
     public function staffAppointments()
     {
         $appointments = Appointment::query()
@@ -148,12 +175,14 @@ class PageController extends Controller
         );
     }
 
-    /**
-     * Detail appointment M5 + integrasi Invoice M6.
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF - DETAIL APPOINTMENT M5 + INVOICE M6
+    |--------------------------------------------------------------------------
+    */
+
     public function staffAppointmentDetail(Appointment $appointment)
     {
-        // Ambil seluruh relasi yang diperlukan halaman detail.
         $appointment->load([
             'pet.customer',
             'groomer.user',
@@ -162,12 +191,17 @@ class PageController extends Controller
             'invoice',
         ]);
 
-        // Kirim data appointment ke halaman detail.
         return view(
             'staff.appointments.show',
             compact('appointment')
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF - CUSTOMERS M2
+    |--------------------------------------------------------------------------
+    */
 
     public function staffCustomers(Request $request)
     {
@@ -176,10 +210,16 @@ class PageController extends Controller
         $customers = Customer::query()
             ->withCount('pets')
             ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($query) use ($search) {
-                    $query->whereRaw('LOWER(nama) LIKE ?', [
-                        '%' . strtolower($search) . '%',
-                    ])->orWhere('no_wa', 'like', '%' . $search . '%');
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery
+                        ->whereRaw('LOWER(nama) LIKE ?', [
+                            '%' . strtolower($search) . '%',
+                        ])
+                        ->orWhere(
+                            'no_wa',
+                            'like',
+                            '%' . $search . '%'
+                        );
                 });
             })
             ->latest()
@@ -192,6 +232,12 @@ class PageController extends Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF - PETS M2
+    |--------------------------------------------------------------------------
+    */
+
     public function staffPets(Request $request)
     {
         $search = trim($request->input('search', ''));
@@ -199,21 +245,26 @@ class PageController extends Controller
         $pets = Pet::query()
             ->with('customer:id,nama,no_wa')
             ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($query) use ($search) {
-                    $query->whereRaw('LOWER(nama) LIKE ?', [
-                        '%' . strtolower($search) . '%',
-                    ])
-                    ->orWhereRaw('LOWER(spesies) LIKE ?', [
-                        '%' . strtolower($search) . '%',
-                    ])
-                    ->orWhereRaw('LOWER(ras) LIKE ?', [
-                        '%' . strtolower($search) . '%',
-                    ])
-                    ->orWhereHas('customer', function ($customerQuery) use ($search) {
-                        $customerQuery->whereRaw('LOWER(nama) LIKE ?', [
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery
+                        ->whereRaw('LOWER(nama) LIKE ?', [
                             '%' . strtolower($search) . '%',
-                        ]);
-                    });
+                        ])
+                        ->orWhereRaw('LOWER(spesies) LIKE ?', [
+                            '%' . strtolower($search) . '%',
+                        ])
+                        ->orWhereRaw('LOWER(ras) LIKE ?', [
+                            '%' . strtolower($search) . '%',
+                        ])
+                        ->orWhereHas(
+                            'customer',
+                            function ($customerQuery) use ($search) {
+                                $customerQuery->whereRaw(
+                                    'LOWER(nama) LIKE ?',
+                                    ['%' . strtolower($search) . '%']
+                                );
+                            }
+                        );
                 });
             })
             ->latest()
@@ -225,6 +276,12 @@ class PageController extends Controller
             compact('pets')
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PUBLIC - HOME
+    |--------------------------------------------------------------------------
+    */
 
     public function publicHome()
     {
@@ -239,8 +296,17 @@ class PageController extends Controller
                 'harga',
             ]);
 
-        return view('public.home', compact('services'));
+        return view(
+            'public.home',
+            compact('services')
+        );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PUBLIC - BOOKING
+    |--------------------------------------------------------------------------
+    */
 
     public function publicBooking()
     {
@@ -260,6 +326,12 @@ class PageController extends Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF - BOOKING
+    |--------------------------------------------------------------------------
+    */
+
     public function staffBooking()
     {
         $services = Service::query()
@@ -278,6 +350,12 @@ class PageController extends Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | GROOMER - TASKS M5
+    |--------------------------------------------------------------------------
+    */
+
     public function groomerTasks()
     {
         $groomer = auth()->user()->groomer;
@@ -289,7 +367,10 @@ class PageController extends Controller
             ])
             ->when(
                 $groomer,
-                fn ($query) => $query->where('groomer_id', $groomer->id),
+                fn ($query) => $query->where(
+                    'groomer_id',
+                    $groomer->id
+                ),
                 fn ($query) => $query->whereRaw('1 = 0')
             )
             ->where('status', '!=', 'dibatalkan')
@@ -299,6 +380,148 @@ class PageController extends Controller
         return view(
             'groomer.tasks.index',
             compact('groomer', 'appointments')
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF - KALENDER WORKLOAD GROOMER M5
+    |--------------------------------------------------------------------------
+    |
+    | Data untuk:
+    | resources/views/staff/groomers/calendar.blade.php
+    |
+    | Variabel:
+    | - $tanggalMulai
+    | - $tanggalAkhir
+    | - $groomerId
+    | - $groomers
+    | - $appointmentsByDate
+    |
+    */
+
+    public function groomerCalendar(Request $request)
+    {
+        $validated = $request->validate([
+            'tanggal_mulai' => [
+                'nullable',
+                'date_format:Y-m-d',
+            ],
+            'tanggal_akhir' => [
+                'nullable',
+                'date_format:Y-m-d',
+            ],
+            'groomer_id' => [
+                'nullable',
+                'integer',
+                'exists:groomers,id',
+            ],
+        ]);
+
+        $tanggalMulai = $validated['tanggal_mulai']
+            ?? today()->startOfWeek()->toDateString();
+
+        $tanggalAkhir = $validated['tanggal_akhir']
+            ?? today()->endOfWeek()->toDateString();
+
+        $start = Carbon::parse($tanggalMulai);
+        $end = Carbon::parse($tanggalAkhir);
+
+        if ($end->lt($start)) {
+            throw ValidationException::withMessages([
+                'tanggal_akhir' =>
+                    'Tanggal akhir tidak boleh sebelum tanggal mulai.',
+            ]);
+        }
+
+        if ($start->diffInDays($end) > 31) {
+            throw ValidationException::withMessages([
+                'tanggal_akhir' =>
+                    'Rentang kalender maksimal 31 hari.',
+            ]);
+        }
+
+        $groomerId = $validated['groomer_id'] ?? null;
+
+        $groomers = Groomer::query()
+            ->with('user')
+            ->orderBy('id')
+            ->get();
+
+        $appointments = Appointment::query()
+            ->with([
+                'pet.customer',
+                'groomer.user',
+                'services',
+            ])
+            ->whereDate('mulai', '>=', $tanggalMulai)
+            ->whereDate('mulai', '<=', $tanggalAkhir)
+            ->when(
+                $groomerId,
+                fn ($query) => $query->where(
+                    'groomer_id',
+                    $groomerId
+                )
+            )
+            ->orderBy('mulai')
+            ->get();
+
+        $appointmentsByDate = $appointments->groupBy(
+            fn ($appointment) =>
+                $appointment->mulai->toDateString()
+        );
+
+        return view(
+            'staff.groomers.calendar',
+            compact(
+                'tanggalMulai',
+                'tanggalAkhir',
+                'groomerId',
+                'groomers',
+                'appointmentsByDate'
+            )
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF - RIWAYAT GROOMING HEWAN M5
+    |--------------------------------------------------------------------------
+    |
+    | Data untuk:
+    | resources/views/staff/pets/grooming-history.blade.php
+    |
+    | Variabel:
+    | - $pet
+    | - $groomingRecords
+    |
+    */
+
+    public function staffPetGroomingHistory(Pet $pet)
+    {
+        $pet->load('customer');
+
+        $groomingRecords = Appointment::query()
+            ->with([
+                'groomer.user',
+                'services',
+                'groomingRecord',
+            ])
+            ->where('pet_id', $pet->id)
+            ->whereIn('status', [
+                'selesai',
+                'dijemput',
+            ])
+            ->whereHas('groomingRecord')
+            ->orderByDesc('mulai')
+            ->paginate(10);
+
+        return view(
+            'staff.pets.grooming-history',
+            compact(
+                'pet',
+                'groomingRecords'
+            )
         );
     }
 }
