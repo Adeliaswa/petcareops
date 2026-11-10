@@ -246,7 +246,7 @@ Terima kasih kepada seluruh anggota tim yang telah berkontribusi dalam pengemban
 
 | Nama | Email | Instagram |
 |---|---|---|
-| Adelia Swastika Dewi | adeliaswastika@gmail.com | (https://www.linkedin.com/in/adeliaswastika/) |
+| Adelia Swastika Dewi | adeliaswastika20@gmail.com | (https://www.linkedin.com/in/adeliaswastika/) |
 | Devi Atika Putri | viatika265@gmail.com | (https://www.linkedin.com/in/deviatika265/) |
 
 ## Lisensi
